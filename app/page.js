@@ -15,8 +15,8 @@ const data = {
     { school: "St. Paul's Sr. Sec. School, Beawar", degree: "Up to Class X", year: "2010 – 2022", note: "" },
   ],
   experience: [
-    { role: "Management Intern", org: "Kapil India Pharmaceuticals", desc: "Assisted in day-to-day operations, inventory management, and coordinating between departments for smooth workflow.", type: "Professional" },
-    { role: "Management Intern", org: "Kapil Diagnostic Centre", desc: "Supported operational and administrative management, patient flow coordination, and process optimization.", type: "Professional" },
+    { role: "Management Intern", org: "Kapil India Pharmaceuticals", desc: "Assisted in daily operations, inventory management and in coordination between departments for smooth and efficient workflow.", type: "Professional" },
+    { role: "Management Intern", org: "Kapil Diagnostic Centre", desc: "Oversight in operational and administrative management, patient flow coordination, conflict resolution amongst the employees, and process optimization.", type: "Professional" },
     { role: "Social Intern", org: "Bharat Vikas Parishad (NGO)", desc: "Participated in community outreach programs, social welfare initiatives, and organizational events.", type: "Social" },
   ],
   certificates: [
