@@ -4,8 +4,8 @@ import { useState, useEffect, useRef } from "react";
 
 const data = {
   name: "Kevalya Khandelwal",
-  tagline: "Full Stack Developer · UI/UX Designer · Tech Manager",
-  bio: "2nd Year B.Tech CSE student specializing in Graphics & Gaming at UPES Dehradun. I  bring to the table both technical depth in backend & frontend development with a designer's eye and a manager's mindset.",
+  tagline: "Full Stack Developer · UI/UX Enthusiast · Tech Manager",
+  bio: "2nd Year B.Tech CSE student specializing in Graphics & Gaming at UPES Dehradun. I blend technical depth in backend & frontend development with a designer's eye and a manager's mindset.",
   email: "kevwal8192@gmail.com",
   linkedin: "https://www.linkedin.com/in/kevalyakhandelwal-3895253a9",
   github: "https://github.com/keva1ya",
@@ -15,8 +15,8 @@ const data = {
     { school: "St. Paul's Sr. Sec. School, Beawar", degree: "Up to Class X", year: "2010 – 2022", note: "" },
   ],
   experience: [
-    { role: "Management Intern", org: "Kapil India Pharmaceuticals", desc: "Assisted in daily operations, inventory management and in coordination between departments for smooth and efficient workflow.", type: "Professional" },
-    { role: "Management Intern", org: "Kapil Diagnostic Centre", desc: "Oversight in operational and administrative management, patient flow coordination, conflict resolution amongst the employees, and process optimization.", type: "Professional" },
+    { role: "Management Intern", org: "Kapil India Pharmaceuticals", desc: "Assisted in day-to-day operations, inventory management, and coordinating between departments for smooth workflow.", type: "Professional" },
+    { role: "Management Intern", org: "Kapil Diagnostic Centre", desc: "Supported operational and administrative management, patient flow coordination, and process optimization.", type: "Professional" },
     { role: "Social Intern", org: "Bharat Vikas Parishad (NGO)", desc: "Participated in community outreach programs, social welfare initiatives, and organizational events.", type: "Social" },
   ],
   certificates: [
@@ -45,7 +45,22 @@ export default function Portfolio() {
   const [cursorHover, setCursorHover] = useState(false);
   const [showTop, setShowTop] = useState(false);
   const [dark, setDark] = useState(false);
+  const [easterEgg, setEasterEgg] = useState(false);
+  const [easterEgg2, setEasterEgg2] = useState(false);
+  const easterBuffer = useRef("");
+  const footerTapCount = useRef(0);
+  const footerTapTimer = useRef(null);
   const sectionRefs = useRef({});
+
+  useEffect(() => {
+    const secret = "kadva sach";
+    const onKey = (e) => {
+      easterBuffer.current = (easterBuffer.current + e.key).slice(-secret.length);
+      if (easterBuffer.current === secret) setEasterEgg(true);
+    };
+    window.addEventListener("keypress", onKey);
+    return () => window.removeEventListener("keypress", onKey);
+  }, []);
 
   useEffect(() => {
     const saved = localStorage.getItem("darkMode");
@@ -376,6 +391,15 @@ export default function Portfolio() {
         .hero-ring:nth-child(2) .hero-ring-label { color: var(--accent2); border-color: rgba(176,123,158,0.25); }
         .hero-center { position: absolute; inset: 36%; border-radius: 50%; background: radial-gradient(circle, rgba(124,131,200,0.15), rgba(176,123,158,0.08)); border: 1px solid rgba(124,131,200,0.2); display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: clamp(0.5rem, 1.5vw, 0.8rem); color: var(--accent); opacity: 0.7; letter-spacing: 1px; }
 
+        /* EASTER EGG */
+        .easter-overlay { position: fixed; inset: 0; z-index: 1000; background: rgba(19,17,30,0.75); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; padding: 2rem; animation: fadeIn 0.3s ease; }
+        .easter-box { background: var(--card); border: 1px solid var(--border); border-radius: 24px; padding: 3rem 2.5rem; max-width: 480px; width: 100%; text-align: center; box-shadow: var(--shadow-lg); animation: slideUp 0.4s cubic-bezier(0.34,1.56,0.64,1); position: relative; }
+        .easter-tag { font-family: "JetBrains Mono", monospace; font-size: 0.7rem; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 1.5rem; opacity: 0.7; }
+        .easter-poem { font-family: "Cormorant Garamond", serif; font-size: 1.45rem; font-weight: 600; color: var(--ink); line-height: 1.7; letter-spacing: 0.2px; }
+        .easter-poem em { display: block; color: var(--accent2); font-style: normal; }
+        .easter-close { margin-top: 2rem; background: none; border: 1.5px solid var(--border); border-radius: 20px; padding: 8px 24px; font-family: "DM Sans", sans-serif; font-size: 0.8rem; color: var(--ink-light); cursor: pointer; transition: 0.2s; }
+        .easter-close:hover { border-color: var(--accent); color: var(--accent); }
+
         * { cursor: none !important; }
         .cursor-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); position: fixed; transform: translate(-50%, -50%); transition: width 0.2s ease, height 0.2s ease, background 0.2s ease; z-index: 9999; pointer-events: none; }
         .cursor-ring { width: 36px; height: 36px; border-radius: 50%; border: 1.5px solid var(--accent); position: fixed; transform: translate(-50%, -50%); transition: all 0.15s ease; opacity: 0.45; z-index: 9998; pointer-events: none; }
@@ -576,13 +600,52 @@ export default function Portfolio() {
         </div>
       </section>
 
+      {easterEgg2 && (
+        <div className="easter-overlay" onClick={() => setEasterEgg2(false)}>
+          <div className="easter-box" onClick={(e) => e.stopPropagation()}>
+            <div className="easter-tag">कड़वा सच</div>
+            <div className="easter-poem">
+              जिन्दगी का तजुर्बा तो नहीं पर इतना मालूम है —
+              <em>छोटा आदमी बड़े मौके पर काम आ जाता है,</em>
+              और बड़ा आदमी छोटी सी बात पर औकात दिखा जाता है।
+            </div>
+            <button className="easter-close" onClick={() => setEasterEgg2(false)}>close</button>
+          </div>
+        </div>
+      )}
+
+      {easterEgg && (
+        <div className="easter-overlay" onClick={() => setEasterEgg(false)}>
+          <div className="easter-box" onClick={(e) => e.stopPropagation()}>
+            <div className="easter-tag">कड़वा सच</div>
+            <div className="easter-poem">
+              धूल चेहरे पर जमी हुई थी
+              <em>हम कमबख्त शीशा पोंछ रहे थे</em>
+            </div>
+            <button className="easter-close" onClick={() => setEasterEgg(false)}>close</button>
+          </div>
+        </div>
+      )}
+
       <div className={`cursor-dot ${cursorHover ? "hover" : ""}`} style={{ left: cursorPos.x, top: cursorPos.y }} />
       <div className={`cursor-ring ${cursorHover ? "hover" : ""}`} style={{ left: cursorPos.x, top: cursorPos.y }} />
       <button className={`back-to-top ${showTop ? "visible" : ""}`} onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>↑</button>
 
       <footer>
         <div className="footer-quote">
-          <blockquote>One must still have chaos in oneself to give birth to a dancing star.</blockquote>
+          <blockquote
+            onClick={() => {
+              footerTapCount.current += 1;
+              clearTimeout(footerTapTimer.current);
+              if (footerTapCount.current >= 5) {
+                setEasterEgg2(true);
+                footerTapCount.current = 0;
+              } else {
+                footerTapTimer.current = setTimeout(() => { footerTapCount.current = 0; }, 2000);
+              }
+            }}
+            style={{ userSelect: "none" }}
+          >One must still have chaos in oneself to give birth to a dancing star.</blockquote>
           <cite>— Friedrich Nietzsche</cite>
         </div>
         <div className="footer-bottom">
