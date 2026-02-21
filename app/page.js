@@ -757,7 +757,9 @@ export default function Portfolio() {
         @media (max-width: 768px) {
           .nav-links { display: none; }
           .hamburger { display: flex; }
-          .hero h1 { letter-spacing: -1px; }
+          .hero { padding-top: 90px; padding-bottom: 60px; justify-content: flex-start; min-height: 100svh; }
+          .hero h1 { font-size: clamp(3rem, 17vw, 5rem); line-height: 0.95; letter-spacing: -1px; }
+          .hero-sub { max-width: 100%; font-size: 0.85rem; margin: 1.2rem 0 1.8rem; }
           .contact-grid { grid-template-columns: 1fr; gap: 2rem; }
           .edu-item { grid-template-columns: 90px 1fr; }
           .edu-item::before { left: 90px; }
