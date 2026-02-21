@@ -131,9 +131,14 @@ export default function Portfolio() {
     setMenuOpen(false);
   };
 
-  const handleForm = (e) => {
+  const handleForm = async (e) => {
     e.preventDefault();
-    setSent(true);
+    const res = await fetch("https://formspree.io/f/xxxxxxxx", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formState),
+    });
+    if (res.ok) setSent(true);
   };
 
   return (
