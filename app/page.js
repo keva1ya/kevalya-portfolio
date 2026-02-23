@@ -54,13 +54,13 @@ const data = {
     { name: "Product Management", issuer: "Online Course", link: "https://drive.google.com/file/d/1wUTdVDdu7hq-Vq5a1bSdjKi4erWYuZ4O/view?usp=sharing" },
   ],
   skills: [
-    { name: "C / C++", level: 80 },
-    { name: "Python", level: 75 },
-    { name: "Java", level: 70 },
-    { name: "SQL", level: 72 },
-    { name: "UI / UX", level: 78 },
-    { name: "HR Management", level: 70 },
-    { name: "Product Management", level: 65 },
+    { name: "C / C++",},
+    { name: "Python",},
+    { name: "Java",},
+    { name: "SQL",},
+    { name: "UI / UX",},
+    { name: "HR Management",},
+    { name: "Product Management",},
   ],
   hobbies: [
     { label: "Reading", icon: "📖" },
@@ -85,6 +85,11 @@ export default function Portfolio() {
   const [showTop, setShowTop] = useState(false);
   const [dark, setDark] = useState(false);
   const sectionRefs = useRef({});
+  const [easterEgg, setEasterEgg] = useState(false);
+  const [easterEgg2, setEasterEgg2] = useState(false);
+  const easterBuffer = useRef("");
+  const footerTapCount = useRef(0);
+  const footerTapTimer = useRef(null);
 
   useEffect(() => {
     const saved = localStorage.getItem("darkMode");
@@ -137,6 +142,15 @@ export default function Portfolio() {
     Object.values(sectionRefs.current).forEach((el) => el && observer.observe(el));
     return () => observer.disconnect();
   }, []);
+  useEffect(() => {
+  const secret = "kadva sach";
+  const onKey = (e) => {
+    easterBuffer.current = (easterBuffer.current + e.key).slice(-secret.length);
+    if (easterBuffer.current === secret) setEasterEgg(true);
+  };
+  window.addEventListener("keypress", onKey);
+  return () => window.removeEventListener("keypress", onKey);
+}, []);
 
   const scrollTo = (id) => {
     sectionRefs.current[id]?.scrollIntoView({ behavior: "smooth" });
@@ -809,6 +823,13 @@ export default function Portfolio() {
           .edu-item::before { left: 90px; }
           .edu-dot { left: 86px; }
           .modal-body iframe { height: 360px; }
+          .easter-overlay { position: fixed; inset: 0; z-index: 1000; background: rgba(19,17,30,0.75); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; padding: 2rem; animation: fadeIn 0.3s ease; }
+          .easter-box { background: var(--card); border: 1px solid var(--border); border-radius: 24px; padding: 3rem 2.5rem; max-width: 480px; width: 100%; text-align: center; box-shadow: var(--shadow-lg); animation: slideUp 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+          .easter-tag { font-family: "JetBrains Mono", monospace; font-size: 0.7rem; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 1.5rem; opacity: 0.7; }
+          .easter-poem { font-family: "Cormorant Garamond", serif; font-size: 1.45rem; font-weight: 600; color: var(--ink); line-height: 1.7; }
+          .easter-poem em { display: block; color: var(--accent2); font-style: normal; }
+          .easter-close { margin-top: 2rem; background: none; border: 1.5px solid var(--border); border-radius: 20px; padding: 8px 24px; font-family: "DM Sans", sans-serif; font-size: 0.8rem; color: var(--ink-light); cursor: pointer; transition: 0.2s; }
+          .easter-close:hover { border-color: var(--accent); color: var(--accent); }
         }
       `}</style>
 
@@ -1055,6 +1076,32 @@ export default function Portfolio() {
           </div>
         </div>
       </footer>
+      {easterEgg && (
+  <div className="easter-overlay" onClick={() => setEasterEgg(false)}>
+    <div className="easter-box" onClick={(e) => e.stopPropagation()}>
+      <div className="easter-tag">कड़वा सच</div>
+      <div className="easter-poem">
+        धूल चेहरे पर जमी हुई थी
+        <em>हम कमबख्त शीशा पोंछ रहे थे</em>
+      </div>
+      <button className="easter-close" onClick={() => setEasterEgg(false)}>close</button>
+    </div>
+  </div>
+)}
+
+{easterEgg2 && (
+  <div className="easter-overlay" onClick={() => setEasterEgg2(false)}>
+    <div className="easter-box" onClick={(e) => e.stopPropagation()}>
+      <div className="easter-tag">कड़वा सच</div>
+      <div className="easter-poem">
+        जिन्दगी का तजुर्बा तो नहीं पर इतना मालूम है —
+        <em>छोटा आदमी बड़े मौके पर काम आ जाता है,</em>
+        और बड़ा आदमी छोटी सी बात पर औकात दिखा जाता है।
+      </div>
+      <button className="easter-close" onClick={() => setEasterEgg2(false)}>close</button>
+    </div>
+  </div>
+)}
     </>
   );
 }
