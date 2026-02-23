@@ -68,6 +68,7 @@ const data = {
     { label: "Gaming", icon: "🎮" },
     { label: "Design", icon: "🎨" },
     { label: "Basketball", icon: "🏀" },
+    {label: "Cinema", icon: "🎬" },
   ],
 };
 
