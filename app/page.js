@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from "react";
 const data = {
   name: "Kevalya Khandelwal",
   tagline: "Full Stack Developer · UI/UX Enthusiast · Tech Manager",
-  bio: "2nd Year B.Tech CSE student specializing in Graphics & Gaming at UPES Dehradun. I blend technical depth in backend & frontend development with a designer's eye and a manager's mindset.",
+  bio: "2nd Year B.Tech CSE student specializing in Graphics & Gaming at UPES Dehradun. I integrate technical depth in backend & frontend development with a designer's eye and a manager's mindset creating a unique blend of functionality and aesthetics.",
   email: "kevwal8192@gmail.com",
   linkedin: "https://www.linkedin.com/in/kevalyakhandelwal-3895253a9",
   github: "https://github.com/keva1ya",
@@ -33,13 +33,13 @@ const data = {
     {
       role: "Management Intern",
       org: "Kapil India Pharmaceuticals",
-      desc: "Assisted in day-to-day operations, inventory management, and coordinating between departments for smooth workflow.",
-      type: "Professional",
+      desc: "Assisted in daily operations, inventory management and in coordination between departments for smooth and efficient workflow.",
+     type: "Professional" 
     },
     {
       role: "Management Intern",
       org: "Kapil Diagnostic Centre",
-      desc: "Supported operational and administrative management, patient flow coordination, and process optimization.",
+      desc: "Oversight in operational and administrative management, patient flow coordination, conflict resolution amongst the employees, and process optimization.",
       type: "Professional",
     },
     {
