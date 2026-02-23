@@ -802,7 +802,7 @@ export default function Portfolio() {
         @media (max-width: 768px) {
           .nav-links { display: none; }
           .hamburger { display: flex; }
-          .hero h1 { letter-spacing: -1px; }
+          .hero h1 { font-size: clamp(2.8rem, 13vw, 4.5rem); letter-spacing: -1px; line-height: 1; }
           .contact-grid { grid-template-columns: 1fr; gap: 2rem; }
           .edu-item { grid-template-columns: 90px 1fr; }
           .edu-item::before { left: 90px; }
