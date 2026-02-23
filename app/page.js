@@ -202,7 +202,7 @@ export default function Portfolio() {
           height: 64px; transition: border-color 0.3s, box-shadow 0.3s;
           background: transparent;
         }
-        nav.scrolled { }
+        nav.scrolled { backdrop-filter: blur(12px); }
         .nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 700; color: var(--ink); cursor: pointer; letter-spacing: 1px; }
         .nav-logo span { color: var(--accent); }
         .nav-links { display: flex; gap: 0.2rem; list-style: none; }
