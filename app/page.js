@@ -195,14 +195,14 @@ export default function Portfolio() {
 
         nav, section, footer, .mobile-menu { position: relative; z-index: 2; }
 
-        /* NAV */
+        /* NAV — always transparent, only a subtle border appears on scroll */
         nav {
           position: fixed; top: 0; left: 0; right: 0; z-index: 100;
           padding: 0 2rem; display: flex; align-items: center; justify-content: space-between;
-          height: 64px; transition: background 0.3s, box-shadow 0.3s;
+          height: 64px; transition: border-color 0.3s, box-shadow 0.3s;
+          background: transparent;
         }
-        nav.scrolled { background: rgba(244,243,248,0.92); backdrop-filter: blur(12px); box-shadow: 0 1px 0 var(--border); }
-        html.dark nav.scrolled { background: rgba(19,17,30,0.92); }
+        nav.scrolled { }
         .nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 700; color: var(--ink); cursor: pointer; letter-spacing: 1px; }
         .nav-logo span { color: var(--accent); }
         .nav-links { display: flex; gap: 0.2rem; list-style: none; }
