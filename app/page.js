@@ -82,7 +82,18 @@ export default function Portfolio() {
   const [cursorPos, setCursorPos] = useState({ x: -100, y: -100 });
   const [cursorHover, setCursorHover] = useState(false);
   const [showTop, setShowTop] = useState(false);
+  const [dark, setDark] = useState(false);
   const sectionRefs = useRef({});
+
+  useEffect(() => {
+    const saved = localStorage.getItem("darkMode");
+    if (saved === "true") setDark(true);
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", dark);
+    localStorage.setItem("darkMode", String(dark));
+  }, [dark]);
 
   useEffect(() => {
     const onScroll = () => { setScrolled(window.scrollY > 40); setShowTop(window.scrollY > 400); };
@@ -157,6 +168,29 @@ export default function Portfolio() {
           --shadow-lg: 0 12px 48px rgba(30,27,46,0.14);
         }
 
+        html.dark {
+          --cream: #13111E;
+          --white: #1C1929;
+          --ink: #E8E6F0;
+          --ink-light: #9D97B8;
+          --accent: #9099D8;
+          --accent2: #C08FAE;
+          --sage: #B090A5;
+          --border: #2E2A42;
+          --card: #1C1929;
+          --shadow: 0 4px 24px rgba(0,0,0,0.25);
+          --shadow-lg: 0 12px 48px rgba(0,0,0,0.4);
+        }
+
+        .dark-toggle {
+          background: none; border: none; outline: none; cursor: pointer;
+          color: var(--ink-light); display: flex; align-items: center;
+          gap: 6px; transition: all 0.2s; padding: 6px 10px; border-radius: 20px;
+          font-family: 'DM Sans', sans-serif; font-size: 0.85rem;
+        }
+        .dark-toggle:hover { color: var(--accent); background: rgba(124,131,200,0.08); }
+        .nav-right { display: flex; align-items: center; gap: 0.25rem; margin-left: auto; }
+
         html { scroll-behavior: smooth; }
 
         body {
@@ -204,9 +238,8 @@ export default function Portfolio() {
           transition: background 0.3s, box-shadow 0.3s;
         }
         nav.scrolled {
-          background: rgba(250,249,246,0.92);
-          backdrop-filter: blur(12px);
-          box-shadow: 0 1px 0 var(--border);
+          background: transparent;
+          backdrop-filter: none;
         }
         .nav-logo {
           font-family: 'Cormorant Garamond', serif;
@@ -618,11 +651,12 @@ export default function Portfolio() {
           font-size: clamp(0.45rem, 1vw, 0.62rem);
           color: var(--accent); font-weight: 500;
           letter-spacing: 1px; white-space: nowrap;
-          background: rgba(244,243,248,0.85);
+          background: var(--cream);
           padding: 2px 6px; border-radius: 4px;
-          border: 1px solid rgba(124,131,200,0.2);
+          border: 1px solid var(--border);
+          transition: background 0.3s, border 0.3s;
         }
-        .hero-ring:nth-child(2) .hero-ring-label { color: var(--accent2); border-color: rgba(176,123,158,0.25); }
+        .hero-ring:nth-child(2) .hero-ring-label { color: var(--accent2); }
         .hero-center {
           position: absolute; inset: 36%;
           border-radius: 50%;
@@ -653,8 +687,20 @@ export default function Portfolio() {
         .cursor-dot.hover { width: 12px; height: 12px; background: var(--accent2); }
         .cursor-ring.hover { width: 52px; height: 52px; opacity: 0.25; border-color: var(--accent2); }
 
-        /* BACK TO TOP */
         .back-to-top {
+          position: fixed; bottom: 2rem; right: 2rem; z-index: 50;
+          width: 44px; height: 44px; border-radius: 50%;
+          background: var(--accent); color: white; border: none;
+          display: flex; align-items: center; justify-content: center;
+          box-shadow: 0 4px 20px rgba(124,131,200,0.4);
+          opacity: 0; transform: translateY(16px);
+          transition: opacity 0.3s ease, transform 0.3s ease, background 0.2s ease;
+          font-size: 1.1rem;
+        }
+        .back-to-top.visible { opacity: 1; transform: translateY(0); }
+        .back-to-top:hover { background: var(--accent2); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(176,123,158,0.4); }
+
+        /* BACK TO TOP */
           position: fixed; bottom: 2rem; right: 2rem; z-index: 50;
           width: 44px; height: 44px; border-radius: 50%;
           background: var(--accent); color: white;
@@ -665,8 +711,6 @@ export default function Portfolio() {
           transition: opacity 0.3s ease, transform 0.3s ease, background 0.2s ease;
           font-size: 1.1rem;
         }
-        .back-to-top.visible { opacity: 1; transform: translateY(0); }
-        .back-to-top:hover { background: var(--accent2); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(176,123,158,0.4); }
 
         /* BETTER FOOTER */
         footer { font-family: 'DM Sans', sans-serif; color: var(--ink-light); }
@@ -769,9 +813,7 @@ export default function Portfolio() {
 
       {/* NAV */}
       <nav className={scrolled ? "scrolled" : ""}>
-        <div className="nav-logo" onClick={() => scrollTo("Home")}>
-          Kevalya<span>.</span>
-        </div>
+
         <ul className="nav-links">
           {NAV.map((n) => (
             <li key={n}>
@@ -781,9 +823,14 @@ export default function Portfolio() {
             </li>
           ))}
         </ul>
-        <button className={`hamburger ${menuOpen ? "open" : ""}`} onClick={() => setMenuOpen(!menuOpen)}>
-          <span /><span /><span />
-        </button>
+        <div className="nav-right">
+          <button className="dark-toggle" onClick={() => setDark(!dark)}>
+            {dark ? "☀️" : "🌙"} {dark ? "Light" : "Dark"}
+          </button>
+          <button className={`hamburger ${menuOpen ? "open" : ""}`} onClick={() => setMenuOpen(!menuOpen)}>
+            <span /><span /><span />
+          </button>
+        </div>
       </nav>
 
       <div className={`mobile-menu ${menuOpen ? "open" : ""}`}>
@@ -988,9 +1035,9 @@ export default function Portfolio() {
       {/* CUSTOM CURSOR */}
       <div className={`cursor-dot ${cursorHover ? "hover" : ""}`} style={{ left: cursorPos.x, top: cursorPos.y }} />
       <div className={`cursor-ring ${cursorHover ? "hover" : ""}`} style={{ left: cursorPos.x, top: cursorPos.y }} />
+      <button className={`back-to-top ${showTop ? "visible" : ""}`} onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>↑</button>
 
       {/* BACK TO TOP */}
-      <button className={`back-to-top ${showTop ? "visible" : ""}`} onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>↑</button>
 
       <footer>
         <div className="footer-quote">
