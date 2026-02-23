@@ -274,7 +274,7 @@ export default function Portfolio() {
         .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
         .mobile-menu {
           position: fixed; top: 64px; left: 0; right: 0;
-          background: rgba(244,243,248,0.97);
+          background: var(--cream);
           backdrop-filter: blur(16px);
           border-bottom: 1px solid var(--border);
           flex-direction: column; padding: 0.5rem 1rem 1rem;
@@ -296,7 +296,7 @@ export default function Portfolio() {
 
         /* SECTIONS */
         section {
-          min-height: 100vh; padding: 100px 2rem 80px;
+          min-height: 100vh; padding: 130px 2rem 80px;
           max-width: 1100px; margin: 0 auto;
         }
         section.full { max-width: 100%; padding-left: 0; padding-right: 0; }
