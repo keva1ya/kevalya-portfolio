@@ -198,6 +198,13 @@ export default function Portfolio() {
           line-height: 1.75; overflow-x: hidden;
           transition: background 0.4s ease, color 0.4s ease;
         }
+        body::before {
+          content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+          background:
+            radial-gradient(ellipse 60% 50% at 10% 20%, rgba(124,131,200,0.18) 0%, transparent 70%),
+            radial-gradient(ellipse 50% 40% at 90% 80%, rgba(176,123,158,0.18) 0%, transparent 70%),
+            radial-gradient(ellipse 40% 35% at 60% 10%, rgba(196,160,181,0.12) 0%, transparent 70%);
+        }
         body::after {
           content: ''; position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: 0.45;
           background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
@@ -211,19 +218,20 @@ export default function Portfolio() {
           height: 62px; transition: all 0.3s; background: transparent;
         }
         nav.scrolled {
-          background: color-mix(in srgb, var(--cream) 85%, transparent);
-          backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+          backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
           border-bottom: 1px solid var(--border);
+          box-shadow: 0 1px 24px rgba(30,27,46,0.07);
         }
         .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 900; color: var(--ink); cursor: pointer; letter-spacing: -0.5px; }
         .nav-logo .dot { color: var(--accent); }
         .nav-links { display: flex; gap: 0; list-style: none; }
         .nav-links button {
-          background: none; border: none; cursor: pointer;
+          background: none; border: none; outline: none; cursor: pointer;
           font-family: 'Cabinet Grotesk', sans-serif; font-size: 0.82rem; font-weight: 500;
           color: var(--ink-light); padding: 0.4rem 0.9rem;
           transition: color 0.2s; position: relative;
         }
+        .nav-links button:focus { outline: none; }
         .nav-links button::after {
           content: ''; position: absolute; bottom: 2px; left: 50%; right: 50%;
           height: 1.5px; background: var(--accent);
@@ -234,12 +242,13 @@ export default function Portfolio() {
         .nav-links button.active::after, .nav-links button:hover::after { left: 0.9rem; right: 0.9rem; }
         .nav-right { display: flex; align-items: center; gap: 0.5rem; }
         .dark-toggle {
-          background: none; border: 1px solid var(--border); cursor: pointer;
+          background: none; border: none; outline: none; cursor: pointer;
           color: var(--ink-light); display: flex; align-items: center; gap: 6px;
           padding: 5px 12px; border-radius: 50px;
           font-family: 'Cabinet Grotesk', sans-serif; font-size: 0.8rem; transition: all 0.2s;
         }
-        .dark-toggle:hover { color: var(--ink); border-color: var(--accent); background: var(--accent-soft); }
+        .dark-toggle:focus { outline: none; }
+        .dark-toggle:hover { color: var(--ink); background: var(--accent-soft); }
         .hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 4px; }
         .hamburger span { display: block; width: 22px; height: 2px; background: var(--ink); border-radius: 2px; transition: transform 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.25s ease; }
         .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
@@ -247,7 +256,8 @@ export default function Portfolio() {
         .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
         .mobile-menu {
           position: fixed; top: 62px; left: 0; right: 0;
-          background: var(--cream); border-bottom: 1px solid var(--border);
+          backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+          border-bottom: 1px solid var(--border);
           flex-direction: column; padding: 0.5rem 1rem 1.5rem;
           box-shadow: var(--shadow-lg); z-index: 99;
           transform: translateY(-110%); transition: transform 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.3s ease;
@@ -326,8 +336,24 @@ export default function Portfolio() {
         .exp-org { font-size: 0.85rem; color: var(--accent2); font-weight: 700; margin-bottom: 1rem; }
         .exp-desc { font-size: 0.84rem; color: var(--ink-light); line-height: 1.8; }
 
-        .skills-groups { display: flex; flex-direction: column; gap: 2.5rem; }
-        .skill-group-label { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--ink-light); margin-bottom: 1rem; }
+        .skills-groups { display: flex; flex-direction: column; gap: 0; }
+        .skill-group {
+          display: grid; grid-template-columns: 140px 1fr;
+          gap: 0 2.5rem; align-items: start;
+          padding: 2rem 0;
+          border-bottom: 1px solid var(--border);
+        }
+        .skill-group:first-child { border-top: 1px solid var(--border); }
+        .skill-group-label {
+          font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; font-weight: 700;
+          letter-spacing: 2.5px; text-transform: uppercase; color: var(--ink-light);
+          padding-top: 0.5rem;
+          position: relative;
+        }
+        .skill-group-label::before {
+          content: ''; display: block; width: 18px; height: 1.5px;
+          background: var(--accent); margin-bottom: 0.5rem; opacity: 0.6;
+        }
         .skill-pills { display: flex; gap: 0.75rem; flex-wrap: wrap; }
         .skill-pill { background: var(--card); border: 1.5px solid var(--border); border-radius: 50px; padding: 0.65rem 1.4rem; box-shadow: var(--shadow); transition: all 0.2s; cursor: default; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; font-weight: 500; color: var(--ink); letter-spacing: -0.2px; }
         .skill-pill:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow-lg); background: var(--accent-soft); }
@@ -515,7 +541,7 @@ export default function Portfolio() {
         <div className="section-title reveal reveal-delay-1">My <em>Skills</em></div>
         <div className="skills-groups reveal reveal-delay-2">
           {data.skillGroups.map((group, gi) => (
-            <div key={gi}>
+            <div className="skill-group" key={gi}>
               <div className="skill-group-label">{group.label}</div>
               <div className="skill-pills">
                 {group.skills.map((s, si) => (
