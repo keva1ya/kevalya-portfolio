@@ -313,7 +313,7 @@ export default function Portfolio() {
         .divider-symbol { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--accent); opacity: 0.5; }
 
         .edu-timeline { display: flex; flex-direction: column; }
-        .edu-item { display: grid; grid-template-columns: 160px 1fr; gap: 0 2rem; position: relative; padding-bottom: 3rem; }
+        .edu-item { display: grid; grid-template-columns: 160px 1fr; gap: 0 2rem; position: relative; padding-bottom: 1.5rem; }
         .edu-item:last-child { padding-bottom: 0; }
         .edu-item::before { content: ''; position: absolute; left: 160px; top: 12px; bottom: 0; width: 1px; background: var(--border); }
         .edu-item:last-child::before { display: none; }
