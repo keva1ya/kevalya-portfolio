@@ -219,7 +219,6 @@ export default function Portfolio() {
         }
         nav.scrolled {
           backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-          border-bottom: 1px solid var(--border);
           box-shadow: 0 1px 24px rgba(30,27,46,0.07);
         }
         .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 900; color: var(--ink); cursor: pointer; letter-spacing: -0.5px; }
