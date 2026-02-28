@@ -338,6 +338,7 @@ export default function Portfolio() {
         .skills-groups { display: flex; flex-direction: column; gap: 0; }
         .skill-group { display: grid; grid-template-columns: 140px 1fr; gap: 0 2.5rem; align-items: start; padding: 2rem 0; border-bottom: 1px solid var(--border); }
         .skill-group:first-child { border-top: 1px solid var(--border); }
+        .skill-group:last-child { border-bottom: none; }
         .skill-group-label { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--ink-light); padding-top: 0.5rem; position: relative; }
         .skill-group-label::before { content: ''; display: block; width: 18px; height: 1.5px; background: var(--accent); margin-bottom: 0.5rem; opacity: 0.6; }
         .skill-pills { display: flex; gap: 0.75rem; flex-wrap: wrap; }
