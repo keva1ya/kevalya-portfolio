@@ -292,7 +292,6 @@ export default function Portfolio() {
         .social-link:hover { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
         .hero-scroll { position: absolute; bottom: 2rem; left: 0; display: flex; align-items: center; gap: 12px; color: var(--ink-light); font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; font-family: 'JetBrains Mono', monospace; animation: fadeUp 0.6s 0.6s ease both; }
         .scroll-line { width: 40px; height: 1px; background: var(--accent); }
-        .hero-number { position: absolute; right: -1rem; top: 50%; transform: translateY(-55%); font-family: 'Playfair Display', serif; font-size: clamp(14rem, 25vw, 22rem); font-weight: 900; line-height: 1; color: transparent; -webkit-text-stroke: 1px var(--border); user-select: none; pointer-events: none; opacity: 0.6; animation: fadeUp 0.8s 0.2s ease both; }
         .hero-visual { position: absolute; right: 5%; top: 50%; transform: translateY(-50%); width: min(360px, 36vw); height: min(360px, 36vw); pointer-events: none; z-index: -1; }
         .hero-ring { position: absolute; border-radius: 50%; animation: rotateRing 18s linear infinite; }
         .hero-ring:nth-child(1) { inset: 0; border: 1px solid rgba(124,131,200,0.25); animation-duration: 22s; }
@@ -314,12 +313,12 @@ export default function Portfolio() {
         .divider-symbol { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--accent); opacity: 0.5; }
 
         .edu-timeline { display: flex; flex-direction: column; }
-        .edu-item { display: grid; grid-template-columns: 140px 1fr; gap: 0 2rem; position: relative; padding-bottom: 3rem; }
+        .edu-item { display: grid; grid-template-columns: 160px 1fr; gap: 0 2rem; position: relative; padding-bottom: 3rem; }
         .edu-item:last-child { padding-bottom: 0; }
-        .edu-item::before { content: ''; position: absolute; left: 140px; top: 12px; bottom: 0; width: 1px; background: var(--border); }
+        .edu-item::before { content: ''; position: absolute; left: 160px; top: 12px; bottom: 0; width: 1px; background: var(--border); }
         .edu-item:last-child::before { display: none; }
-        .edu-year { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--ink-light); font-weight: 500; padding-top: 5px; text-align: right; }
-        .edu-dot { position: absolute; left: 134px; top: 5px; width: 13px; height: 13px; border-radius: 50%; background: var(--cream); border: 2px solid var(--accent); transition: background 0.3s; }
+        .edu-year { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--ink-light); font-weight: 500; padding-top: 5px; text-align: left; }
+        .edu-dot { position: absolute; left: 154px; top: 5px; width: 13px; height: 13px; border-radius: 50%; background: var(--cream); border: 2px solid var(--accent); transition: background 0.3s; }
         .edu-item:hover .edu-dot { background: var(--accent); }
         .edu-content { padding-left: 2.5rem; }
         .edu-school { font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
@@ -436,11 +435,10 @@ export default function Portfolio() {
           .hamburger { display: flex; }
           section { padding: 100px 1.5rem 60px; }
           .hero h1 { font-size: clamp(3rem, 15vw, 5rem); letter-spacing: -2px; }
-          .hero-number { display: none; }
           .hero-visual { display: none; }
-          .edu-item { grid-template-columns: 90px 1fr; }
-          .edu-item::before { left: 90px; }
-          .edu-dot { left: 84px; }
+          .edu-item { grid-template-columns: 110px 1fr; }
+          .edu-item::before { left: 110px; }
+          .edu-dot { left: 104px; }
           .section-divider { padding: 0 1.5rem; }
           .footer-quote { padding: 3rem 1.5rem 2rem; }
           .footer-bottom { padding: 1.5rem; }
@@ -494,7 +492,6 @@ export default function Portfolio() {
           </a>
         </div>
         <div className="hero-scroll"><div className="scroll-line" /> scroll</div>
-        <div className="hero-number" aria-hidden="true">2</div>
       </section>
 
       <div className="section-divider"><div className="divider-symbol">✦</div></div>
