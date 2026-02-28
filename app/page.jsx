@@ -292,6 +292,7 @@ export default function Portfolio() {
         .social-link:hover { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
         .hero-scroll { position: absolute; bottom: 2rem; left: 0; display: flex; align-items: center; gap: 12px; color: var(--ink-light); font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; font-family: 'JetBrains Mono', monospace; animation: fadeUp 0.6s 0.6s ease both; }
         .scroll-line { width: 40px; height: 1px; background: var(--accent); }
+
         .hero-visual { position: absolute; right: 5%; top: 50%; transform: translateY(-50%); width: min(360px, 36vw); height: min(360px, 36vw); pointer-events: none; z-index: -1; }
         .hero-ring { position: absolute; border-radius: 50%; animation: rotateRing 18s linear infinite; }
         .hero-ring:nth-child(1) { inset: 0; border: 1px solid rgba(124,131,200,0.25); animation-duration: 22s; }
@@ -313,7 +314,7 @@ export default function Portfolio() {
         .divider-symbol { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--accent); opacity: 0.5; }
 
         .edu-timeline { display: flex; flex-direction: column; }
-        .edu-item { display: grid; grid-template-columns: 160px 1fr; gap: 0 2rem; position: relative; padding-bottom: 1.5rem; }
+        .edu-item { display: grid; grid-template-columns: 160px 1fr; gap: 0 2rem; position: relative; padding-bottom: 2rem; }
         .edu-item:last-child { padding-bottom: 0; }
         .edu-item::before { content: ''; position: absolute; left: 160px; top: 12px; bottom: 0; width: 1px; background: var(--border); }
         .edu-item:last-child::before { display: none; }
@@ -336,23 +337,10 @@ export default function Portfolio() {
         .exp-desc { font-size: 0.84rem; color: var(--ink-light); line-height: 1.8; }
 
         .skills-groups { display: flex; flex-direction: column; gap: 0; }
-        .skill-group {
-          display: grid; grid-template-columns: 140px 1fr;
-          gap: 0 2.5rem; align-items: start;
-          padding: 2rem 0;
-          border-bottom: 1px solid var(--border);
-        }
+        .skill-group { display: grid; grid-template-columns: 140px 1fr; gap: 0 2.5rem; align-items: start; padding: 2rem 0; border-bottom: 1px solid var(--border); }
         .skill-group:first-child { border-top: 1px solid var(--border); }
-        .skill-group-label {
-          font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; font-weight: 700;
-          letter-spacing: 2.5px; text-transform: uppercase; color: var(--ink-light);
-          padding-top: 0.5rem;
-          position: relative;
-        }
-        .skill-group-label::before {
-          content: ''; display: block; width: 18px; height: 1.5px;
-          background: var(--accent); margin-bottom: 0.5rem; opacity: 0.6;
-        }
+        .skill-group-label { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--ink-light); padding-top: 0.5rem; position: relative; }
+        .skill-group-label::before { content: ''; display: block; width: 18px; height: 1.5px; background: var(--accent); margin-bottom: 0.5rem; opacity: 0.6; }
         .skill-pills { display: flex; gap: 0.75rem; flex-wrap: wrap; }
         .skill-pill { background: var(--card); border: 1.5px solid var(--border); border-radius: 50px; padding: 0.65rem 1.4rem; box-shadow: var(--shadow); transition: all 0.2s; cursor: default; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; font-weight: 500; color: var(--ink); letter-spacing: -0.2px; }
         .skill-pill:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow-lg); background: var(--accent-soft); }
