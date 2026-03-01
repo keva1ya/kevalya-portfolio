@@ -15,9 +15,9 @@ const data = {
     { school: "St. Paul's Sr. Sec. School, Beawar", degree: "Up to Class X", year: "2010 – 2022", note: "" },
   ],
   experience: [
-    { role: "Management Intern", org: "Kapil India Pharmaceuticals", desc: "Assisted in daily operations, inventory management and in coordination between departments for smooth and efficient workflow.", type: "Professional" },
-    { role: "Management Intern", org: "Kapil Diagnostic Centre", desc: "Oversight in operational and administrative management, patient flow coordination, conflict resolution amongst the employees, and process optimization.", type: "Professional" },
-    { role: "Social Intern", org: "Bharat Vikas Parishad (NGO)", desc: "Participated in community outreach programs, social welfare initiatives, and organizational events.", type: "Social" },
+    { role: "Management Intern", org: "Kapil India Pharmaceuticals", desc: "Assisted in daily operations, inventory management and in coordination between departments for smooth and efficient workflow.", type: "Professional", year: "Summer 2022" },
+    { role: "Management Intern", org: "Kapil Diagnostic Centre", desc: "Oversight in operational and administrative management, patient flow coordination, conflict resolution amongst the employees, and process optimization.", type: "Professional", year: "Summer 2023" },
+    { role: "Social Intern", org: "Bharat Vikas Parishad (NGO)", desc: "Participated in community outreach programs, social welfare initiatives, and organizational events.", type: "Social", year: "Summer 2024" },
   ],
   skillGroups: [
     { label: "Languages", skills: ["C / C++", "Python", "Java", "SQL"] },
@@ -177,7 +177,7 @@ export default function Portfolio() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Cabinet+Grotesk:wght@400;500;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Cabinet+Grotesk:wght@400;500;700;800&family=JetBrains+Mono:wght@400;500;700&family=Dancing+Script:wght@600;700&display=swap');
 
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -407,6 +407,32 @@ export default function Portfolio() {
         .form-group input:focus, .form-group textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(124,131,200,0.15); }
         .success-msg { background: rgba(129,178,154,0.15); border: 1px solid var(--sage); color: var(--sage); border-radius: 10px; padding: 1rem; text-align: center; font-weight: 600; }
 
+        .skill-group-languages .skill-pill { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; }
+        .skill-group-languages { border-left: 2px solid var(--accent); padding-left: 1rem; }
+        .skill-group-design .skill-pill { font-family: 'Dancing Script', cursive; font-size: 1.15rem; font-weight: 700; letter-spacing: 0.5px; }
+        .skill-group-design { border-left: 2px solid var(--accent2); padding-left: 1rem; }
+        .skill-group-management .skill-pill { font-family: 'Playfair Display', serif; font-size: 0.88rem; font-weight: 700; }
+        .skill-group-management { border-left: 2px solid var(--sage); padding-left: 1rem; }
+
+        .hobby-card { transform: rotate(var(--card-rotation, 0deg)); transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.25s ease, border-color 0.25s ease, background 0.25s ease; }
+        .hobby-card:hover { transform: rotate(0deg) scale(1.08) !important; border-color: var(--accent) !important; box-shadow: 0 8px 32px rgba(124,131,200,0.25); background: var(--accent-soft); }
+        .hobby-card:hover .hobby-card-icon { animation: iconPop 0.35s cubic-bezier(0.34,1.56,0.64,1); }
+        @keyframes iconPop { 0% { transform: scale(1); } 50% { transform: scale(1.45) rotate(-8deg); } 100% { transform: scale(1.15) rotate(0deg); } }
+
+        .wip-comment-centered { display: flex; justify-content: center; margin-top: 2.2rem; }
+
+        .wip-comment { display: inline-flex; align-items: center; gap: 0.4rem; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--ink-light); padding: 0.55rem 1rem; background: var(--accent-soft); border-left: 2px solid var(--accent); border-radius: 0 8px 8px 0; opacity: 0.85; margin-top: 2.2rem; }
+        .wip-comment .wip-punct { color: var(--accent); font-weight: 700; }
+
+        .cert-card-wip { position: relative; opacity: 0.6; cursor: pointer; border-style: dashed !important; }
+        .cert-card-wip:hover { opacity: 0.85; }
+        .cert-card-wip .cert-icon { filter: grayscale(1); }
+        .wip-tooltip { position: absolute; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%) translateY(4px); background: var(--ink); color: var(--cream); font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; padding: 6px 12px; border-radius: 6px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease; z-index: 10; letter-spacing: 0.5px; }
+        .wip-tooltip::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 5px solid transparent; border-top-color: var(--ink); }
+        .cert-card-wip:hover .wip-tooltip { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        .exp-year { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--accent); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 0.4rem; }
+
         .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s cubic-bezier(0.4,0,0.2,1), transform 0.7s cubic-bezier(0.4,0,0.2,1); }
         .reveal.visible { opacity: 1; transform: translateY(0); }
         .reveal-delay-1 { transition-delay: 0.1s; }
@@ -550,6 +576,7 @@ export default function Portfolio() {
         <div className="exp-grid">
           {data.experience.map((ex, i) => (
             <div className={`exp-card reveal reveal-delay-${i + 1}`} key={i}>
+              <div className="exp-year">{ex.year}</div>
               <div className="exp-type">{ex.type}</div>
               <div className="exp-role">{ex.role}</div>
               <div className="exp-org">{ex.org}</div>
@@ -565,17 +592,21 @@ export default function Portfolio() {
         <div className="section-overline reveal">// toolkit</div>
         <div className="section-title reveal reveal-delay-1">My <em>Skills</em></div>
         <div className="skills-groups reveal reveal-delay-2">
-          {data.skillGroups.map((group, gi) => (
-            <div className="skill-group" key={gi}>
-              <div className="skill-group-label">{group.label}</div>
-              <div className="skill-pills">
-                {group.skills.map((s, si) => (
-                  <div className="skill-pill" key={si}>{s}</div>
-                ))}
+          {data.skillGroups.map((group, gi) => {
+            const groupClass = group.label === "Languages" ? "skill-group-languages" : group.label === "Design" ? "skill-group-design" : "skill-group-management";
+            return (
+              <div className={`skill-group ${groupClass}`} key={gi}>
+                <div className="skill-group-label">{group.label}</div>
+                <div className="skill-pills">
+                  {group.skills.map((s, si) => (
+                    <div className="skill-pill" key={si}>{s}</div>
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
+        <div className="wip-comment-centered reveal reveal-delay-3"><span className="wip-comment"><span className="wip-punct">/*</span> 🚧 more skills loading... <span className="wip-punct">*/</span></span></div>
       </section>
 
       <div className="section-divider"><div className="divider-symbol">✦</div></div>
@@ -592,22 +623,33 @@ export default function Portfolio() {
               <div className="cert-link">VIEW CERTIFICATE →</div>
             </a>
           ))}
+          <div className={`cert-card cert-card-wip reveal reveal-delay-${data.certificates.length + 1}`}>
+            <div className="wip-tooltip">// still earning these</div>
+            <div className="cert-icon">🚧</div>
+            <div className="cert-name">More Coming</div>
+            <div className="cert-issuer">Work in Progress</div>
+            <div className="cert-link">STAY TUNED →</div>
+          </div>
         </div>
       </section>
 
       <div className="section-divider"><div className="divider-symbol">✦</div></div>
 
       <section data-section="Beyond Code" ref={(el) => (sectionRefs.current["Beyond Code"] = el)} className="section-centered">
-        <div className="section-overline" style={{ justifyContent: "center" }}>Beyond Code</div>
-        <div className="section-title">My <em>Interests</em></div>
+        <div className="section-overline" style={{ justifyContent: "center" }}>My Interests</div>
+        <div className="section-title">Beyond <em>Code</em></div>
         <div className="hobbies-grid">
-          {data.hobbies.map((h, i) => (
-            <div className={`hobby-card reveal reveal-delay-${(i % 3) + 1}`} key={i}>
-              <span className="hobby-card-icon">{h.icon}</span>
-              <span className="hobby-card-label">{h.label}</span>
-            </div>
-          ))}
+          {data.hobbies.map((h, i) => {
+            const rotations = [-2.5, 1.8, -1.2, 2.2, -1.8];
+            return (
+              <div className={`hobby-card reveal reveal-delay-${(i % 3) + 1}`} key={i} style={{ "--card-rotation": `${rotations[i % rotations.length]}deg` }}>
+                <span className="hobby-card-icon">{h.icon}</span>
+                <span className="hobby-card-label">{h.label}</span>
+              </div>
+            );
+          })}
         </div>
+        <div className="wip-comment-centered reveal reveal-delay-3"><span className="wip-comment"><span className="wip-punct">/*</span> 🚧 still exploring... <span className="wip-punct">*/</span></span></div>
       </section>
 
       <div className="section-divider"><div className="divider-symbol">✦</div></div>
