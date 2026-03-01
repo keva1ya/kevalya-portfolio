@@ -51,6 +51,7 @@ export default function Portfolio() {
   const [easterEgg2, setEasterEgg2] = useState(false);
   const [easterPoems, setEasterPoems] = useState([]);
   const [currentPoem, setCurrentPoem] = useState(null);
+  const easterPoemsRef = useRef([]);
   const [typeText, setTypeText] = useState("");
   const [typeWordIdx, setTypeWordIdx] = useState(0);
   const [typeCharIdx, setTypeCharIdx] = useState(0);
@@ -61,7 +62,7 @@ export default function Portfolio() {
   const sectionRefs = useRef({});
 
   useEffect(() => {
-    fetch('/easter.json').then(r => r.json()).then(setEasterPoems).catch(() => {});
+    fetch('/easter.json').then(r => r.json()).then(data => { setEasterPoems(data); easterPoemsRef.current = data; }).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -99,7 +100,10 @@ export default function Portfolio() {
     const onKey = (e) => {
       easterBuffer.current = (easterBuffer.current + e.key).slice(-secret.length);
       if (easterBuffer.current === secret) {
-        if (easterPoems.length > 0) setCurrentPoem(easterPoems[Math.floor(Math.random() * easterPoems.length)]);
+        const poems = easterPoemsRef.current.length > 0 ? easterPoemsRef.current : [
+          { tag: "कड़वा सच", poem: "धूल चेहरे पर जमी हुई थी", em: "हम कमबख्त शीशा पोंछ रहे थे" }
+        ];
+        setCurrentPoem(poems[Math.floor(Math.random() * poems.length)]);
         setEasterEgg(true);
       }
     };
@@ -151,7 +155,10 @@ export default function Portfolio() {
     footerTapCount.current += 1;
     clearTimeout(footerTapTimer.current);
     if (footerTapCount.current >= 5) {
-      if (easterPoems.length > 0) setCurrentPoem(easterPoems[Math.floor(Math.random() * easterPoems.length)]);
+      const poems = easterPoemsRef.current.length > 0 ? easterPoemsRef.current : [
+        { tag: "कड़वा सच", poem: "धूल चेहरे पर जमी हुई थी", em: "हम कमबख्त शीशा पोंछ रहे थे" }
+      ];
+      setCurrentPoem(poems[Math.floor(Math.random() * poems.length)]);
       setEasterEgg2(true);
       footerTapCount.current = 0;
     }
