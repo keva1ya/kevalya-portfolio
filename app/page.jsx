@@ -43,10 +43,12 @@ export default function Portfolio() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [formState, setFormState] = useState({ name: "", email: "", message: "" });
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
   const [cursorPos, setCursorPos] = useState({ x: -100, y: -100 });
   const [cursorHover, setCursorHover] = useState(false);
   const [showTop, setShowTop] = useState(false);
   const [dark, setDark] = useState(false);
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
   const [easterEgg, setEasterEgg] = useState(false);
   const [easterEgg2, setEasterEgg2] = useState(false);
   const [easterPoems, setEasterPoems] = useState([]);
@@ -63,6 +65,10 @@ export default function Portfolio() {
 
   useEffect(() => {
     fetch('/easter.json').then(r => r.json()).then(data => { setEasterPoems(data); easterPoemsRef.current = data; }).catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    setIsTouchDevice(window.matchMedia("(pointer: coarse)").matches);
   }, []);
 
   useEffect(() => {
@@ -118,6 +124,14 @@ export default function Portfolio() {
   }, []);
 
   useEffect(() => {
+    if (!isTouchDevice) {
+      document.body.classList.add("custom-cursor");
+    } else {
+      document.body.classList.remove("custom-cursor");
+    }
+  }, [isTouchDevice]);
+
+  useEffect(() => {
     const onMove = (e) => setCursorPos({ x: e.clientX, y: e.clientY });
     const onEnter = () => setCursorHover(true);
     const onLeave = () => setCursorHover(false);
@@ -167,11 +181,13 @@ export default function Portfolio() {
 
   const handleForm = async (e) => {
     e.preventDefault();
+    setSending(true);
     const res = await fetch("https://formspree.io/f/xaqdpope", {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formState),
     });
     if (res.ok) setSent(true);
+    setSending(false);
   };
 
   return (
@@ -333,12 +349,12 @@ export default function Portfolio() {
         .divider-symbol { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--accent); opacity: 0.5; }
 
         .edu-timeline { display: flex; flex-direction: column; }
-        .edu-item { display: grid; grid-template-columns: 160px 1fr; gap: 0 2rem; position: relative; padding-bottom: 2rem; }
+        .edu-item { --tl-col: 160px; display: grid; grid-template-columns: var(--tl-col) 1fr; gap: 0 2rem; position: relative; padding-bottom: 2rem; }
         .edu-item:last-child { padding-bottom: 0; }
-        .edu-item::before { content: ''; position: absolute; left: 160px; top: 12px; bottom: 0; width: 1px; background: var(--border); }
+        .edu-item::before { content: ''; position: absolute; left: var(--tl-col); top: 12px; bottom: 0; width: 1px; background: var(--border); }
         .edu-item:last-child::before { display: none; }
         .edu-year { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--ink-light); font-weight: 500; padding-top: 5px; text-align: left; }
-        .edu-dot { position: absolute; left: 154px; top: 5px; width: 13px; height: 13px; border-radius: 50%; background: var(--cream); border: 2px solid var(--accent); transition: background 0.3s; }
+        .edu-dot { position: absolute; left: calc(var(--tl-col) - 6px); top: 5px; width: 13px; height: 13px; border-radius: 50%; background: var(--cream); border: 2px solid var(--accent); transition: background 0.3s; }
         .edu-item:hover .edu-dot { background: var(--accent); }
         .edu-content { padding-left: 2.5rem; }
         .edu-school { font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
@@ -391,7 +407,7 @@ export default function Portfolio() {
         .mobile-blob:nth-child(3) { width: 160px; height: 160px; background: rgba(196,160,181,0.12); top: 40%; right: -40px; animation-delay: 4s; }
         @keyframes blobPulse { 0%,100% { transform: scale(1); opacity: 0.7; } 50% { transform: scale(1.15); opacity: 1; } }
 
-        .footer-easter-hint { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 1.2rem; font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: var(--ink-light); opacity: 0.2; letter-spacing: 1.5px; user-select: none; transition: opacity 0.3s; }
+        .footer-easter-hint { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 1.2rem; font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: var(--ink-light); opacity: 0.25; letter-spacing: 1.5px; user-select: none; transition: opacity 0.3s; }
         .footer-easter-hint:hover { opacity: 0.45; }
         .footer-hint-cursor { display: inline-block; width: 1.5px; height: 0.75em; background: var(--accent); vertical-align: text-bottom; animation: blink 1.2s step-end infinite; margin-left: 1px; }
 
@@ -439,7 +455,7 @@ export default function Portfolio() {
         .reveal-delay-2 { transition-delay: 0.2s; }
         .reveal-delay-3 { transition-delay: 0.3s; }
 
-        * { cursor: none !important; }
+        body.custom-cursor * { cursor: none !important; }
         .cursor-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); position: fixed; transform: translate(-50%,-50%); transition: width 0.15s, height 0.15s, background 0.15s; z-index: 9999; pointer-events: none; }
         .cursor-dot.hover { width: 10px; height: 10px; background: var(--accent2); }
         .cursor-ring { width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid var(--accent); position: fixed; transform: translate(-50%,-50%); transition: all 0.12s ease; opacity: 0.5; z-index: 9998; pointer-events: none; }
@@ -485,9 +501,7 @@ export default function Portfolio() {
           .hero h1 { font-size: clamp(3rem, 15vw, 5rem); letter-spacing: -2px; }
           .hero-visual { display: none; }
           .mobile-blobs { display: block; }
-          .edu-item { grid-template-columns: 110px 1fr; }
-          .edu-item::before { left: 110px; }
-          .edu-dot { left: 104px; }
+          .edu-item { --tl-col: 110px; grid-template-columns: var(--tl-col) 1fr; }
           .section-divider { padding: 0 1.5rem; }
           .footer-quote { padding: 3rem 1.5rem 2rem; }
           .footer-bottom { padding: 1.5rem; }
@@ -504,8 +518,8 @@ export default function Portfolio() {
           ))}
         </ul>
         <div className="nav-right">
-          <button className="dark-toggle" onClick={() => setDark(!dark)}>{dark ? "☀️" : "🌙"} {dark ? "Light" : "Dark"}</button>
-          <button className={`hamburger ${menuOpen ? "open" : ""}`} onClick={() => setMenuOpen(!menuOpen)}>
+          <button className="dark-toggle" onClick={() => setDark(!dark)} aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}>{dark ? "☀️" : "🌙"} {dark ? "Light" : "Dark"}</button>
+          <button className={`hamburger ${menuOpen ? "open" : ""}`} onClick={() => setMenuOpen(!menuOpen)} aria-label={menuOpen ? "Close menu" : "Open menu"} aria-expanded={menuOpen}>
             <span /><span /><span />
           </button>
         </div>
@@ -659,9 +673,18 @@ export default function Portfolio() {
         <div className="section-title">Get in <em>Touch</em></div>
         <div className="contact-wrap">
           <div className="contact-links">
-            <div className="contact-detail"><span>✉️</span><a href={`mailto:${data.email}`}>{data.email}</a></div>
-            <div className="contact-detail"><span>💼</span><a href={data.linkedin} target="_blank" rel="noreferrer">linkedin.com/in/kevalyakhandelwal</a></div>
-            <div className="contact-detail"><span>🐙</span><a href={data.github} target="_blank" rel="noreferrer">github.com/keva1ya</a></div>
+            <div className="contact-detail">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+              <a href={`mailto:${data.email}`}>{data.email}</a>
+            </div>
+            <div className="contact-detail">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+              <a href={data.linkedin} target="_blank" rel="noreferrer">linkedin.com/in/kevalyakhandelwal</a>
+            </div>
+            <div className="contact-detail">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+              <a href={data.github} target="_blank" rel="noreferrer">github.com/keva1ya</a>
+            </div>
           </div>
           {sent ? (
             <div className="success-msg">✅ Message sent! I'll get back to you soon.</div>
@@ -670,15 +693,17 @@ export default function Portfolio() {
               <div className="form-group"><label>Your Name</label><input type="text" required placeholder="John Doe" value={formState.name} onChange={(e) => setFormState({ ...formState, name: e.target.value })} /></div>
               <div className="form-group"><label>Email</label><input type="email" required placeholder="john@example.com" value={formState.email} onChange={(e) => setFormState({ ...formState, email: e.target.value })} /></div>
               <div className="form-group"><label>Message</label><textarea rows="5" required placeholder="Tell me about your project or idea..." value={formState.message} onChange={(e) => setFormState({ ...formState, message: e.target.value })} /></div>
-              <div style={{ textAlign: "center" }}><button className="btn-primary" type="submit">Send Message →</button></div>
+              <div style={{ textAlign: "center" }}><button className="btn-primary" type="submit" disabled={sending}>{sending ? "Sending..." : "Send Message →"}</button></div>
             </form>
           )}
         </div>
       </section>
 
-      <div className={`cursor-dot ${cursorHover ? "hover" : ""}`} style={{ left: cursorPos.x, top: cursorPos.y }} />
-      <div className={`cursor-ring ${cursorHover ? "hover" : ""}`} style={{ left: cursorPos.x, top: cursorPos.y }} />
-      <button className={`back-to-top ${showTop ? "visible" : ""}`} onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>↑</button>
+      {!isTouchDevice && <>
+        <div className={`cursor-dot ${cursorHover ? "hover" : ""}`} style={{ left: cursorPos.x, top: cursorPos.y }} />
+        <div className={`cursor-ring ${cursorHover ? "hover" : ""}`} style={{ left: cursorPos.x, top: cursorPos.y }} />
+      </>}
+      <button className={`back-to-top ${showTop ? "visible" : ""}`} onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} aria-label="Back to top">↑</button>
 
       <footer>
         <div className="footer-quote">
