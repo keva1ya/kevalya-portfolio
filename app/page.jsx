@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from "react";
 const data = {
   name: "Kevalya Khandelwal",
   tagline: "Full Stack Developer · UI/UX Enthusiast · Tech Manager",
-  bio: "2nd Year B.Tech CSE student specializing in Graphics & Gaming at UPES Dehradun. I integrate technical depth in backend & frontend development with a designer's eye and a manager's mindset creating a unique blend of functionality and aesthetics.",
+  bio: "CSE student at UPES Dehradun, specializing in Graphics & Gaming. I build things, design experiences, and occasionally manage people.",
   email: "kevwal8192@gmail.com",
   linkedin: "https://www.linkedin.com/in/kevalyakhandelwal-3895253a9",
   github: "https://github.com/keva1ya",
@@ -30,12 +30,12 @@ const data = {
   ],
   hobbies: [
     { label: "Reading", icon: "📖" }, { label: "Writing", icon: "✍️" }, { label: "Gaming", icon: "🎮" },
-    { label: "Design", icon: "🎨" }, { label: "Basketball", icon: "🏀" }, { label: "Cinema", icon: "🎬" },
+    { label: "Basketball", icon: "🏀" }, { label: "Cinema", icon: "🎬" },
   ],
 };
 
-const NAV = ["Home", "Education", "Experience", "Skills", "Certificates", "Hobbies", "Contact"];
-const TYPEWRITER_WORDS = ["Full Stack Developer", "UI/UX Enthusiast", "Tech Manager", "Problem Solver"];
+const NAV = ["Home", "Education", "Experience", "Skills", "Certificates", "Beyond Code", "Contact"];
+const TYPEWRITER_WORDS = ["Full Stack Developer", "UI/UX Enthusiast", "Tech Manager", "Game Dev Enthusiast"];
 
 export default function Portfolio() {
   const [active, setActive] = useState("Home");
@@ -49,6 +49,8 @@ export default function Portfolio() {
   const [dark, setDark] = useState(false);
   const [easterEgg, setEasterEgg] = useState(false);
   const [easterEgg2, setEasterEgg2] = useState(false);
+  const [easterPoems, setEasterPoems] = useState([]);
+  const [currentPoem, setCurrentPoem] = useState(null);
   const [typeText, setTypeText] = useState("");
   const [typeWordIdx, setTypeWordIdx] = useState(0);
   const [typeCharIdx, setTypeCharIdx] = useState(0);
@@ -57,6 +59,10 @@ export default function Portfolio() {
   const footerTapCount = useRef(0);
   const footerTapTimer = useRef(null);
   const sectionRefs = useRef({});
+
+  useEffect(() => {
+    fetch('/easter.json').then(r => r.json()).then(setEasterPoems).catch(() => {});
+  }, []);
 
   useEffect(() => {
     const saved = localStorage.getItem("darkMode");
@@ -92,7 +98,10 @@ export default function Portfolio() {
     const secret = "kadva sach";
     const onKey = (e) => {
       easterBuffer.current = (easterBuffer.current + e.key).slice(-secret.length);
-      if (easterBuffer.current === secret) setEasterEgg(true);
+      if (easterBuffer.current === secret) {
+        if (easterPoems.length > 0) setCurrentPoem(easterPoems[Math.floor(Math.random() * easterPoems.length)]);
+        setEasterEgg(true);
+      }
     };
     window.addEventListener("keypress", onKey);
     return () => window.removeEventListener("keypress", onKey);
@@ -141,7 +150,11 @@ export default function Portfolio() {
   const handleFooterTap = () => {
     footerTapCount.current += 1;
     clearTimeout(footerTapTimer.current);
-    if (footerTapCount.current >= 5) { setEasterEgg2(true); footerTapCount.current = 0; }
+    if (footerTapCount.current >= 5) {
+      if (easterPoems.length > 0) setCurrentPoem(easterPoems[Math.floor(Math.random() * easterPoems.length)]);
+      setEasterEgg2(true);
+      footerTapCount.current = 0;
+    }
     else { footerTapTimer.current = setTimeout(() => { footerTapCount.current = 0; }, 2000); }
   };
 
@@ -356,10 +369,24 @@ export default function Portfolio() {
         .cert-link { margin-top: 1.2rem; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--accent); font-weight: 700; letter-spacing: 1px; position: relative; z-index: 1; display: block; }
 
         .section-centered { text-align: center; display: flex; flex-direction: column; align-items: center; }
-        .hobbies-row { display: flex; gap: 0.8rem; flex-wrap: wrap; justify-content: center; }
-        .hobby-pill { display: flex; align-items: center; gap: 10px; background: var(--card); border: 1px solid var(--border); border-radius: 50px; padding: 0.85rem 1.8rem; font-size: 0.92rem; font-weight: 600; color: var(--ink); box-shadow: var(--shadow); transition: all 0.2s; cursor: default; }
-        .hobby-pill:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-3px); box-shadow: var(--shadow-lg); }
-        .hobby-pill span:first-child { font-size: 1.3rem; }
+        .hobbies-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 1rem; width: 100%; max-width: 700px; }
+        .hobby-card { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.7rem; background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 2rem 1rem; font-size: 0.88rem; font-weight: 600; color: var(--ink); box-shadow: var(--shadow); transition: all 0.25s; cursor: default; }
+        .hobby-card:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-5px); box-shadow: var(--shadow-lg); background: var(--accent-soft); }
+        .hobby-card-icon { font-size: 2rem; line-height: 1; }
+        .hobby-card-label { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+
+        .mobile-kk-badge { display: none; margin: 2rem auto 0; width: 90px; height: 90px; border-radius: 50%; background: radial-gradient(circle, rgba(124,131,200,0.15), rgba(176,123,158,0.08)); border: 1px solid rgba(124,131,200,0.3); align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--accent); letter-spacing: 1px; animation: fadeUp 0.6s 0.5s ease both; }
+
+        .mobile-blobs { display: none; position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+        .mobile-blob { position: absolute; border-radius: 50%; filter: blur(60px); animation: blobPulse 6s ease-in-out infinite; }
+        .mobile-blob:nth-child(1) { width: 280px; height: 280px; background: rgba(124,131,200,0.18); top: -60px; right: -80px; animation-delay: 0s; }
+        .mobile-blob:nth-child(2) { width: 220px; height: 220px; background: rgba(176,123,158,0.15); bottom: 40px; left: -60px; animation-delay: 2s; }
+        .mobile-blob:nth-child(3) { width: 160px; height: 160px; background: rgba(196,160,181,0.12); top: 40%; right: -40px; animation-delay: 4s; }
+        @keyframes blobPulse { 0%,100% { transform: scale(1); opacity: 0.7; } 50% { transform: scale(1.15); opacity: 1; } }
+
+        .footer-easter-hint { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 1.2rem; font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: var(--ink-light); opacity: 0.2; letter-spacing: 1.5px; user-select: none; transition: opacity 0.3s; }
+        .footer-easter-hint:hover { opacity: 0.45; }
+        .footer-hint-cursor { display: inline-block; width: 1.5px; height: 0.75em; background: var(--accent); vertical-align: text-bottom; animation: blink 1.2s step-end infinite; margin-left: 1px; }
 
         .contact-wrap { max-width: 600px; margin: 0 auto; width: 100%; }
         .contact-links { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 2.5rem; }
@@ -424,6 +451,7 @@ export default function Portfolio() {
           section { padding: 100px 1.5rem 60px; }
           .hero h1 { font-size: clamp(3rem, 15vw, 5rem); letter-spacing: -2px; }
           .hero-visual { display: none; }
+          .mobile-blobs { display: block; }
           .edu-item { grid-template-columns: 110px 1fr; }
           .edu-item::before { left: 110px; }
           .edu-dot { left: 104px; }
@@ -480,6 +508,11 @@ export default function Portfolio() {
           </a>
         </div>
         <div className="hero-scroll"><div className="scroll-line" /> scroll</div>
+        <div className="mobile-blobs">
+          <div className="mobile-blob" />
+          <div className="mobile-blob" />
+          <div className="mobile-blob" />
+        </div>
       </section>
 
       <div className="section-divider"><div className="divider-symbol">✦</div></div>
@@ -557,12 +590,15 @@ export default function Portfolio() {
 
       <div className="section-divider"><div className="divider-symbol">✦</div></div>
 
-      <section data-section="Hobbies" ref={(el) => (sectionRefs.current["Hobbies"] = el)} className="section-centered">
+      <section data-section="Beyond Code" ref={(el) => (sectionRefs.current["Beyond Code"] = el)} className="section-centered">
         <div className="section-overline" style={{ justifyContent: "center" }}>Beyond Code</div>
-        <div className="section-title">My <em>Hobbies</em></div>
-        <div className="hobbies-row">
+        <div className="section-title">My <em>Interests</em></div>
+        <div className="hobbies-grid">
           {data.hobbies.map((h, i) => (
-            <div className="hobby-pill" key={i}><span>{h.icon}</span><span>{h.label}</span></div>
+            <div className={`hobby-card reveal reveal-delay-${(i % 3) + 1}`} key={i}>
+              <span className="hobby-card-icon">{h.icon}</span>
+              <span className="hobby-card-label">{h.label}</span>
+            </div>
           ))}
         </div>
       </section>
@@ -599,6 +635,7 @@ export default function Portfolio() {
         <div className="footer-quote">
           <blockquote onClick={handleFooterTap}>One must still have chaos in oneself to give birth to a dancing star.</blockquote>
           <cite>— Friedrich Nietzsche</cite>
+          <div className="footer-easter-hint">// there's more here<span className="footer-hint-cursor" /></div>
         </div>
         <div className="footer-bottom">
           <div className="footer-inner">
@@ -611,26 +648,15 @@ export default function Portfolio() {
         </div>
       </footer>
 
-      {easterEgg && (
-        <div className="easter-overlay" onClick={() => setEasterEgg(false)}>
+      {(easterEgg || easterEgg2) && currentPoem && (
+        <div className="easter-overlay" onClick={() => { setEasterEgg(false); setEasterEgg2(false); }}>
           <div className="easter-box" onClick={(e) => e.stopPropagation()}>
-            <div className="easter-tag">कड़वा सच</div>
-            <div className="easter-poem">धूल चेहरे पर जमी हुई थी<em>हम कमबख्त शीशा पोंछ रहे थे</em></div>
-            <button className="easter-close" onClick={() => setEasterEgg(false)}>close</button>
-          </div>
-        </div>
-      )}
-
-      {easterEgg2 && (
-        <div className="easter-overlay" onClick={() => setEasterEgg2(false)}>
-          <div className="easter-box" onClick={(e) => e.stopPropagation()}>
-            <div className="easter-tag">कड़वा सच</div>
+            <div className="easter-tag">{currentPoem.tag}</div>
             <div className="easter-poem">
-              जिन्दगी का तजुर्बा तो नहीं पर इतना मालूम है —
-              <em>छोटा आदमी बड़े मौके पर काम आ जाता है,</em>
-              और बड़ा आदमी छोटी सी बात पर औकात दिखा जाता है।
+              {currentPoem.poem}
+              <em>{currentPoem.em}</em>
             </div>
-            <button className="easter-close" onClick={() => setEasterEgg2(false)}>close</button>
+            <button className="easter-close" onClick={() => { setEasterEgg(false); setEasterEgg2(false); }}>close</button>
           </div>
         </div>
       )}
