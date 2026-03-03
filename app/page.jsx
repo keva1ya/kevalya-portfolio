@@ -15,9 +15,9 @@ const data = {
     { school: "St. Paul's Sr. Sec. School, Beawar", degree: "Up to Class X", year: "2010 – 2022", note: "" },
   ],
   experience: [
-    { role: "Management Intern", org: "Kapil India Pharmaceuticals", desc: "Assisted in daily operations, inventory management and in coordination between departments for smooth and efficient workflow.", type: "Professional", year: "Summer 2022" },
-    { role: "Management Intern", org: "Kapil Diagnostic Centre", desc: "Oversight in operational and administrative management, patient flow coordination, conflict resolution amongst the employees, and process optimization.", type: "Professional", year: "Summer 2023" },
-    { role: "Social Intern", org: "Bharat Vikas Parishad (NGO)", desc: "Participated in community outreach programs, social welfare initiatives, and organizational events.", type: "Social", year: "Summer 2024" },
+    { role: "Management Intern", org: "Kapil India Pharmaceuticals", desc: "Assisted in daily operations, inventory management and in coordination between departments for smooth and efficient workflow.", type: "Professional", year: "Summer 2023" },
+    { role: "Management Intern", org: "Kapil Diagnostic Centre", desc: "Oversight in operational and administrative management, patient flow coordination, conflict resolution amongst the employees, and process optimization.", type: "Professional", year: "Summer 2024" },
+    { role: "Social Intern", org: "Bharat Vikas Parishad (NGO)", desc: "Participated in community outreach programs, social welfare initiatives, and organizational events.", type: "Social", year: "Summer 2025" },
   ],
   skillGroups: [
     { label: "Languages", skills: ["C / C++", "Python", "Java", "SQL"] },
