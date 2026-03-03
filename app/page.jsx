@@ -690,8 +690,8 @@ export default function Portfolio() {
             <div className="success-msg">✅ Message sent! I'll get back to you soon.</div>
           ) : (
             <form onSubmit={handleForm} style={{ textAlign: "left" }}>
-              <div className="form-group"><label>Your Name</label><input type="text" required placeholder="Enter your name" value={formState.name} onChange={(e) => setFormState({ ...formState, name: e.target.value })} /></div>
-              <div className="form-group"><label>Email</label><input type="email" required placeholder="john@example.com" value={formState.email} onChange={(e) => setFormState({ ...formState, email: e.target.value })} /></div>
+              <div className="form-group"><label>Your Name</label><input type="text" value={formState.name} onChange={(e) => setFormState({ ...formState, name: e.target.value })} /></div>
+              <div className="form-group"><label>Email</label><input type="email"value={formState.email} onChange={(e) => setFormState({ ...formState, email: e.target.value })} /></div>
               <div className="form-group"><label>Message</label><textarea rows="5" required placeholder="Tell me about your project or idea..." value={formState.message} onChange={(e) => setFormState({ ...formState, message: e.target.value })} /></div>
               <div style={{ textAlign: "center" }}><button className="btn-primary" type="submit" disabled={sending}>{sending ? "Sending..." : "Send Message →"}</button></div>
             </form>
