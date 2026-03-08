@@ -34,7 +34,7 @@ const data = {
 };
 const NAV = ["Home", "Education", "Experience", "Skills", "Certificates", "Beyond Code", "Contact"];
 const TYPEWRITER_WORDS = ["Full Stack Developer", "UI/UX Enthusiast", "Tech Manager", "Game Dev Enthusiast"];
-const INTRO_MESSAGE = "sorry its dark i wasnt expecting company";
+const INTRO_MESSAGE = "Sorry it's dark I wasnt expecting any company";
 const FALLBACK_EASTER_POEMS = [
   {
     tag: "\u0915\u095C\u0935\u093E \u0938\u091A",
