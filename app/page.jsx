@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import { useState, useEffect, useRef } from "react";
 import easterPoemsData from "./easter.json";
 const data = {
@@ -71,6 +71,9 @@ export default function Portfolio() {
   const footerTapCount = useRef(0);
   const footerTapTimer = useRef(null);
   const sectionRefs = useRef({});
+  // FIX 3: Use a ref for RAF id to throttle mousemove
+  const cursorRafRef = useRef(null);
+
   useEffect(() => {
     easterPoemsRef.current = Array.isArray(easterPoemsData) && easterPoemsData.length > 0
       ? easterPoemsData
@@ -117,8 +120,6 @@ export default function Portfolio() {
       if (e.ctrlKey || e.metaKey || e.altKey) return;
       const key = e.key.toLowerCase();
       if (!/^[a-z ]$/.test(key)) return;
-
-      // Ignore spaces so both "kadva sach" and "kadvasach" trigger.
       if (key !== " ") {
         easterBuffer.current = (easterBuffer.current + key).slice(-secret.length);
       }
@@ -133,24 +134,41 @@ export default function Portfolio() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
   useEffect(() => {
-    const onScroll = () => { setScrolled(window.scrollY > 40); setShowTop(window.scrollY > 400); };
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
+    // FIX 3: Throttle scroll handler with RAF
+    let rafId = null;
+    const onScroll = () => {
+      if (rafId) return;
+      rafId = requestAnimationFrame(() => {
+        setScrolled(window.scrollY > 40);
+        setShowTop(window.scrollY > 400);
+        rafId = null;
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
   }, []);
   useEffect(() => {
     if (!isTouchDevice) document.body.classList.add("custom-cursor");
     else document.body.classList.remove("custom-cursor");
   }, [isTouchDevice]);
   useEffect(() => {
+    // FIX 3: Throttle mousemove with requestAnimationFrame
     const onMove = (e) => {
-      if (cursorDotRef.current) {
-        cursorDotRef.current.style.left = e.clientX + "px";
-        cursorDotRef.current.style.top = e.clientY + "px";
-      }
-      if (cursorRingRef.current) {
-        cursorRingRef.current.style.left = e.clientX + "px";
-        cursorRingRef.current.style.top = e.clientY + "px";
-      }
+      if (cursorRafRef.current) return;
+      cursorRafRef.current = requestAnimationFrame(() => {
+        if (cursorDotRef.current) {
+          cursorDotRef.current.style.left = e.clientX + "px";
+          cursorDotRef.current.style.top = e.clientY + "px";
+        }
+        if (cursorRingRef.current) {
+          cursorRingRef.current.style.left = e.clientX + "px";
+          cursorRingRef.current.style.top = e.clientY + "px";
+        }
+        cursorRafRef.current = null;
+      });
     };
     const onEnter = () => setCursorHover(true);
     const onLeave = () => setCursorHover(false);
@@ -159,6 +177,7 @@ export default function Portfolio() {
     interactives.forEach((el) => { el.addEventListener("mouseenter", onEnter); el.addEventListener("mouseleave", onLeave); });
     return () => {
       window.removeEventListener("mousemove", onMove);
+      if (cursorRafRef.current) cancelAnimationFrame(cursorRafRef.current);
       interactives.forEach((el) => { el.removeEventListener("mouseenter", onEnter); el.removeEventListener("mouseleave", onLeave); });
     };
   }, []);
@@ -226,8 +245,37 @@ export default function Portfolio() {
         }
         html { scroll-behavior: smooth; }
         body { font-family: 'Cabinet Grotesk', sans-serif; background: var(--cream); color: var(--ink); line-height: 1.75; overflow-x: hidden; transition: background 0.4s ease, color 0.4s ease; }
-        body::before { content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none; background: radial-gradient(ellipse 60% 50% at 10% 20%, rgba(124,131,200,0.18) 0%, transparent 70%), radial-gradient(ellipse 50% 40% at 90% 80%, rgba(176,123,158,0.18) 0%, transparent 70%), radial-gradient(ellipse 40% 35% at 60% 10%, rgba(196,160,181,0.12) 0%, transparent 70%); }
-        body::after { content: ''; position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: 0.45; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E"); background-repeat: repeat; background-size: 180px 180px; mix-blend-mode: multiply; }
+
+        /* FIX 1: body::before — keep the gradient but add will-change so it gets its own GPU layer */
+        body::before {
+          content: '';
+          position: fixed;
+          inset: 0;
+          z-index: 0;
+          pointer-events: none;
+          background:
+            radial-gradient(ellipse 60% 50% at 10% 20%, rgba(124,131,200,0.18) 0%, transparent 70%),
+            radial-gradient(ellipse 50% 40% at 90% 80%, rgba(176,123,158,0.18) 0%, transparent 70%),
+            radial-gradient(ellipse 40% 35% at 60% 10%, rgba(196,160,181,0.12) 0%, transparent 70%);
+          will-change: transform;
+        }
+
+        /* FIX 1 (main fix): Remove mix-blend-mode from the noise layer — this was the #1 scroll killer.
+           Also reduce opacity slightly and add will-change for GPU compositing. */
+        body::after {
+          content: '';
+          position: fixed;
+          inset: 0;
+          z-index: 1;
+          pointer-events: none;
+          opacity: 0.25;
+          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+          background-repeat: repeat;
+          background-size: 180px 180px;
+          /* mix-blend-mode: multiply; <-- REMOVED: this was forcing full-page repaint on every scroll frame */
+          will-change: transform;
+        }
+
         nav, section, footer, .mobile-menu { position: relative; z-index: 2; }
         nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 3.8rem; display: flex; align-items: center; justify-content: space-between; height: 52px; transition: all 0.3s; background: transparent; }
         nav.scrolled { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: none; border: none; background: transparent; }
@@ -272,7 +320,9 @@ export default function Portfolio() {
         .hero-scroll { position: absolute; bottom: 2rem; left: 0; display: flex; align-items: center; gap: 12px; color: var(--ink-light); font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; font-family: 'JetBrains Mono', monospace; animation: fadeUp 0.6s 0.6s ease both; }
         .scroll-line { width: 40px; height: 1px; background: var(--accent); }
         .hero-visual { position: absolute; right: 4%; top: 50%; transform: translateY(-50%); width: min(340px, 34vw); height: min(340px, 34vw); pointer-events: none; z-index: 0; }
-        .vinyl-wrap { width: 100%; height: 100%; position: relative; animation: vinylSpin 8s linear infinite; }
+
+        /* FIX 2: Add will-change so the spinning vinyl is isolated on its own GPU layer */
+        .vinyl-wrap { width: 100%; height: 100%; position: relative; animation: vinylSpin 8s linear infinite; will-change: transform; }
         .vinyl-wrap:hover { animation-play-state: paused; }
         .vinyl-svg { width: 100%; height: 100%; filter: drop-shadow(0 16px 48px rgba(30,27,46,0.25)); }
         .hero-tonearm-wrap { position: absolute; top: clamp(-8px,-1.8vw,-12px); right: clamp(-26px,-4.8vw,-34px); width: clamp(72px,10vw,96px); pointer-events: none; transform-origin: 90% 8%; transform: rotate(0deg); opacity: 0.92; filter: drop-shadow(0 10px 20px rgba(20,16,32,0.35)); }
@@ -285,7 +335,7 @@ export default function Portfolio() {
         .hero-name-small { margin-top: 1.8rem; font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--ink-light); animation: fadeUp 0.6s 0.2s ease both; display: flex; align-items: center; gap: 8px; }
         .hero-name-small::before { content: '-'; color: var(--accent); }
         .mobile-blobs { display: none; position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
-        .mobile-blob { position: absolute; border-radius: 50%; filter: blur(60px); animation: blobPulse 6s ease-in-out infinite; }
+        .mobile-blob { position: absolute; border-radius: 50%; filter: blur(60px); animation: blobPulse 6s ease-in-out infinite; will-change: transform, opacity; }
         .mobile-blob:nth-child(1) { width: 280px; height: 280px; background: rgba(124,131,200,0.18); top: -60px; right: -80px; }
         .mobile-blob:nth-child(2) { width: 220px; height: 220px; background: rgba(176,123,158,0.15); bottom: 40px; left: -60px; animation-delay: 2s; }
         .mobile-blob:nth-child(3) { width: 160px; height: 160px; background: rgba(196,160,181,0.12); top: 40%; right: -40px; animation-delay: 4s; }
@@ -388,9 +438,9 @@ export default function Portfolio() {
         .reveal-delay-2 { transition-delay: 0.2s; }
         .reveal-delay-3 { transition-delay: 0.3s; }
         body.custom-cursor * { cursor: none !important; }
-        .cursor-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); position: fixed; transform: translate(-50%,-50%); transition: width 0.15s, height 0.15s, background 0.15s; z-index: 9999; pointer-events: none; }
+        .cursor-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); position: fixed; transform: translate(-50%,-50%); transition: width 0.15s, height 0.15s, background 0.15s; z-index: 9999; pointer-events: none; will-change: left, top; }
         .cursor-dot.hover { width: 10px; height: 10px; background: var(--accent2); }
-        .cursor-ring { width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid var(--accent); position: fixed; transform: translate(-50%,-50%); transition: width 0.2s ease, height 0.2s ease, opacity 0.2s ease, border-color 0.2s ease; opacity: 0.5; z-index: 9998; pointer-events: none; }
+        .cursor-ring { width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid var(--accent); position: fixed; transform: translate(-50%,-50%); transition: width 0.2s ease, height 0.2s ease, opacity 0.2s ease, border-color 0.2s ease; opacity: 0.5; z-index: 9998; pointer-events: none; will-change: left, top; }
         .cursor-ring.hover { width: 48px; height: 48px; opacity: 0.2; border-color: var(--accent2); }
         .back-to-top { position: fixed; bottom: 2rem; right: 2rem; z-index: 50; width: 44px; height: 44px; border-radius: 50%; background: var(--accent); color: white; border: none; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(124,131,200,0.4); opacity: 0; transform: translateY(16px); transition: opacity 0.3s, transform 0.3s; font-size: 1.1rem; cursor: pointer; }
         .back-to-top.visible { opacity: 1; transform: translateY(0); }
@@ -414,6 +464,8 @@ export default function Portfolio() {
         .easter-poem em { display: block; color: var(--accent2); font-style: italic; }
         .easter-close { margin-top: 2rem; background: none; border: 1.5px solid var(--border); border-radius: 20px; padding: 8px 28px; font-family: 'Cabinet Grotesk', sans-serif; font-size: 0.8rem; font-weight: 700; color: var(--ink-light); cursor: pointer; transition: 0.2s; text-transform: uppercase; letter-spacing: 1px; display: inline-block; }
         .easter-close:hover { border-color: var(--accent); color: var(--accent); }
+
+        /* FIX 2: will-change on the intro vinyl spin for GPU isolation */
         @keyframes vinylSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -444,7 +496,9 @@ export default function Portfolio() {
         @keyframes hintFade { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
         .intro-vinyl-side { display: flex; flex-direction: column; align-items: center; gap: 1.5rem; position: absolute; right: 4%; top: 50%; transform: translateY(-50%); flex-shrink: 0; margin-top: 0; }
         .intro-vinyl-outer { position: relative; display: inline-block; }
-        .intro-vinyl-wrap { width: min(340px, 34vw); height: min(340px, 34vw); animation: vinylSpin 6s linear infinite; animation-play-state: paused; transition: filter 0.8s ease; filter: brightness(0.3); }
+
+        /* FIX 2: will-change on the intro vinyl for GPU isolation */
+        .intro-vinyl-wrap { width: min(340px, 34vw); height: min(340px, 34vw); animation: vinylSpin 6s linear infinite; animation-play-state: paused; transition: filter 0.8s ease; filter: brightness(0.3); will-change: transform; }
         .intro-vinyl-wrap.spinning { animation-play-state: running; filter: brightness(1); }
         .intro-vinyl-wrap svg { width: 100%; height: 100%; }
         .intro-tonearm-wrap { position: absolute; top: clamp(-10px,-2vw,-14px); right: clamp(-28px,-5vw,-38px); width: clamp(70px,10vw,95px); pointer-events: none; transform-origin: 90% 8%; transform: rotate(-18deg); transition: transform 0.9s cubic-bezier(0.4,0,0.2,1), opacity 0.8s ease; opacity: 0.4; }
@@ -505,6 +559,7 @@ export default function Portfolio() {
 
           <div className="intro-vinyl-side">
             <div className="intro-vinyl-outer">
+              {/* FIX 4: Reduced groove circles from 24 down to 10 */}
               <div className={`intro-vinyl-wrap${cordPulled ? " spinning" : ""}`}>
                 <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
                   <defs>
@@ -524,7 +579,8 @@ export default function Portfolio() {
                     </radialGradient>
                   </defs>
                   <circle cx="150" cy="150" r="148" fill="url(#ivGrad)" stroke="rgba(124,131,200,0.12)" strokeWidth="1" />
-                  {[28,33,38,43,48,53,58,63,68,73,78,83,88,93,98,103,108,113,118,123,128,133,138,143].map((r, i) => (
+                  {/* FIX 4: Reduced from 24 to 10 groove circles */}
+                  {[35,50,65,80,95,108,118,126,133,140].map((r, i) => (
                     <circle key={i} cx="150" cy="150" r={r} fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="1" />
                   ))}
                   <circle cx="150" cy="150" r="46" fill="url(#ilGrad)" />
@@ -564,7 +620,7 @@ export default function Portfolio() {
         </div>
       </div>
 
-      {/* â”€â”€ Nav â”€â”€ */}
+      {/* ── Nav ── */}
       <nav className={scrolled ? "scrolled" : ""}>
         <div className="nav-logo" onClick={() => scrollTo("Home")}>
           KK<span className="dot">.</span>
@@ -586,9 +642,10 @@ export default function Portfolio() {
         {NAV.map((n) => (<button key={n} onClick={() => scrollTo(n)}>{n}</button>))}
       </div>
 
-      {/* â”€â”€ Hero â”€â”€ */}
+      {/* ── Hero ── */}
       <section className="hero" data-section="Home" ref={(el) => (sectionRefs.current["Home"] = el)}>
         <div className="hero-visual">
+          {/* FIX 4: Reduced groove circles from 28 to 10 in hero vinyl */}
           <div className="vinyl-wrap">
             <svg className="vinyl-svg" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
               <defs>
@@ -608,7 +665,8 @@ export default function Portfolio() {
                 </radialGradient>
               </defs>
               <circle cx="150" cy="150" r="148" fill="url(#vinylGrad)" stroke="rgba(124,131,200,0.15)" strokeWidth="1" />
-              {[30,34,38,42,46,50,54,58,62,66,70,74,78,82,86,90,94,98,102,106,110,114,118,122,126,130,134,138].map((r, i) => (
+              {/* FIX 4: Reduced from 28 to 10 groove circles */}
+              {[35,50,65,80,95,108,118,126,133,140].map((r, i) => (
                 <circle key={i} cx="150" cy="150" r={r} fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="0.8" />
               ))}
               <circle cx="150" cy="150" r="42" fill="url(#labelGrad)" />
@@ -667,7 +725,7 @@ export default function Portfolio() {
 
       <div className="section-divider"><div className="divider-symbol">&#10022;</div></div>
 
-      {/* â”€â”€ Education â”€â”€ */}
+      {/* ── Education ── */}
       <section data-section="Education" ref={(el) => (sectionRefs.current["Education"] = el)}>
         <div className="section-overline reveal">Background</div>
         <div className="section-title reveal reveal-delay-1">My <em>Education</em></div>
@@ -688,7 +746,7 @@ export default function Portfolio() {
 
       <div className="section-divider"><div className="divider-symbol">&#10022;</div></div>
 
-      {/* â”€â”€ Experience â”€â”€ */}
+      {/* ── Experience ── */}
       <section data-section="Experience" ref={(el) => (sectionRefs.current["Experience"] = el)}>
         <div className="section-overline reveal">Work & Volunteering</div>
         <div className="section-title reveal reveal-delay-1">My <em>Experience</em></div>
@@ -707,7 +765,7 @@ export default function Portfolio() {
 
       <div className="section-divider"><div className="divider-symbol">&#10022;</div></div>
 
-      {/* â”€â”€ Skills â”€â”€ */}
+      {/* ── Skills ── */}
       <section data-section="Skills" ref={(el) => (sectionRefs.current["Skills"] = el)}>
         <div className="section-overline reveal">{'// toolkit'}</div>
         <div className="section-title reveal reveal-delay-1">My <em>Skills</em></div>
@@ -733,7 +791,7 @@ export default function Portfolio() {
 
       <div className="section-divider"><div className="divider-symbol">&#10022;</div></div>
 
-      {/* â”€â”€ Certificates â”€â”€ */}
+      {/* ── Certificates ── */}
       <section data-section="Certificates" ref={(el) => (sectionRefs.current["Certificates"] = el)}>
         <div className="section-overline reveal">Achievements</div>
         <div className="section-title reveal reveal-delay-1">My <em>Certificates</em></div>
@@ -758,7 +816,7 @@ export default function Portfolio() {
 
       <div className="section-divider"><div className="divider-symbol">&#10022;</div></div>
 
-      {/* â”€â”€ Beyond Code â”€â”€ */}
+      {/* ── Beyond Code ── */}
       <section data-section="Beyond Code" ref={(el) => (sectionRefs.current["Beyond Code"] = el)} className="section-centered">
         <div className="section-overline" style={{ justifyContent: "center" }}>My Interests</div>
         <div className="section-title">Beyond <em>Code</em></div>
@@ -780,7 +838,7 @@ export default function Portfolio() {
 
       <div className="section-divider"><div className="divider-symbol">&#10022;</div></div>
 
-      {/* â”€â”€ Contact â”€â”€ */}
+      {/* ── Contact ── */}
       <section data-section="Contact" ref={(el) => (sectionRefs.current["Contact"] = el)} className="section-centered">
         <div className="section-overline" style={{ justifyContent: "center" }}>Say Hello</div>
         <div className="section-title">Get in <em>Touch</em></div>
@@ -823,7 +881,7 @@ export default function Portfolio() {
 
       <div className="section-divider"><div className="divider-symbol">&#10022;</div></div>
 
-      {/* â”€â”€ Currently â”€â”€ */}
+      {/* ── Currently ── */}
       <section data-section="Currently" className="section-centered currently-section">
         <div className="section-overline" style={{ justifyContent: "center" }}>right now</div>
         <div className="section-title">What I'm <em>Up To</em></div>
@@ -846,7 +904,7 @@ export default function Portfolio() {
             <span className="currently-card-icon">{"\uD83D\uDD27"}</span>
             <div className="currently-card-body">
               <div className="currently-card-label">Building</div>
-              <div className="currently-card-value">A Commercial Software </div>
+              <div className="currently-card-value">A Commercial Software</div>
             </div>
           </div>
           <div className="currently-card reveal" style={{ transitionDelay: "0.4s" }}>
@@ -859,7 +917,7 @@ export default function Portfolio() {
         </div>
       </section>
 
-      {/* â”€â”€ Footer â”€â”€ */}
+      {/* ── Footer ── */}
       <footer>
         <div className="footer-quote">
           <blockquote onClick={handleFooterTap}>One must still have chaos in oneself to give birth to a dancing star.</blockquote>
@@ -892,13 +950,3 @@ export default function Portfolio() {
     </>
   );
 }
-
-
-
-
-
-
-
-
-
-
