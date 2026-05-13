@@ -19,9 +19,59 @@ const data = {
     { role: "Social Intern", org: "Bharat Vikas Parishad (NGO)", desc: "Participated in community outreach programs, social welfare initiatives, and organizational events.", type: "Social", year: "Summer 2025" },
   ],
   skillGroups: [
-    { label: "Languages", skills: ["C / C++", "Python", "Java", "SQL"] },
-    { label: "Design", skills: ["UI / UX"] },
-    { label: "Management", skills: ["HR Management", "Product Management"] },
+    { label: "Languages", tone: "languages", skills: ["C / C++", "Python", "Java", "SQL"] },
+    { label: "Web & Frontend", tone: "web", skills: ["HTML5", "CSS3", "JavaScript", "React.js", "Next.js", "Tailwind CSS"] },
+    { label: "Backend & Data", tone: "backend", skills: ["Node.js", "REST APIs", "MySQL", "Firebase"] },
+    { label: "Design & UX", tone: "design", skills: ["UI / UX Design", "Wireframing", "Prototyping", "Responsive Design"] },
+    { label: "Tools & Concepts", tone: "tools", skills: ["Git", "GitHub", "VS Code", "Linux", "Vercel", "Figma", "Data Structures", "Algorithms", "OOP", "Agile", "Product Management"] },
+  ],
+  projects: [
+    {
+      name: "Sententia / MetaOpenEnv",
+      type: "Multi-agent AI system",
+      year: "2025",
+      link: "https://github.com/keva1ya/Metaopenenv",
+      summary: "Production-grade underwriting system built on Meta&apos;s OpenEnv framework with a hierarchical council, dissent logging, and offline RL trace capture.",
+      stack: ["OpenEnv", "Gradio", "FastAPI", "PyTorch", "Hugging Face"],
+      highlights: [
+        "Three specialized councils for risk, fraud, and policy decisions.",
+        "Reward shaping plus trace logs for offline GRPO training.",
+        "Built to fail safely when model inference is unavailable.",
+      ],
+    },
+    {
+      name: "Developer Portfolio Website",
+      type: "Personal portfolio",
+      year: "2025",
+      link: "https://kevalya-portfolio.vercel.app",
+      summary: "Responsive personal portfolio with custom motion, dark/light mode, and interactive sections.",
+      stack: ["Next.js", "React", "CSS"],
+      highlights: [
+        "Mobile-first layout with custom animation layers.",
+        "Designed to present work, skills, and contact info cleanly.",
+        "Deployed for public review on Vercel.",
+      ],
+    },
+  ],
+  modelHighlights: [
+    {
+      name: "qwen-risk-merged",
+      role: "Risk Agent",
+      link: "https://huggingface.co/Keva1ya/qwen-risk-merged",
+      note: "Fine-tuned for tabular financial reasoning and council-level weight aggregation.",
+    },
+    {
+      name: "qwen-2.5-fraud",
+      role: "Fraud Agent",
+      link: "https://huggingface.co/Keva1ya/qwen-2.5-fraud",
+      note: "Fine-tuned to surface behavioral integrity issues and enforce KYC vetoes.",
+    },
+    {
+      name: "mistral-risk-model",
+      role: "Policy Agent",
+      link: "https://huggingface.co/Keva1ya/mistral-risk-model",
+      note: "Fine-tuned for compliance reasoning and regulatory tie-breaking.",
+    },
   ],
   certificates: [
     { name: "Code with Moana", issuer: "Disney / Infinity Creative", link: "https://drive.google.com/file/d/18lFaB0zAYmjMzeS5XuQ3aZFOYvYPIDFw/view?usp=sharing", icon: "\uD83C\uDFC5" },
@@ -32,7 +82,14 @@ const data = {
     { label: "Basketball", icon: "\uD83C\uDFC0" }, { label: "Cinema", icon: "\uD83C\uDFAC" },
   ],
 };
-const NAV = ["Home", "Education", "Experience", "Skills", "Certificates", "Beyond Code", "Contact"];
+const NAV = ["Home", "Education", "Experience", "Projects", "Skills", "Models", "Certificates", "Beyond Code", "Contact"];
+const SKILL_GROUP_CLASSES = {
+  languages: "skill-group-languages",
+  web: "skill-group-web",
+  backend: "skill-group-backend",
+  design: "skill-group-design",
+  tools: "skill-group-tools",
+};
 const TYPEWRITER_WORDS = ["Full Stack Developer", "UI/UX Enthusiast", "Tech Manager", "Game Dev Enthusiast"];
 const INTRO_MESSAGE = "Sorry it's dark I wasnt expecting any company";
 const FALLBACK_EASTER_POEMS = [
@@ -56,8 +113,14 @@ export default function Portfolio() {
   const cursorDotRef = useRef(null);
   const cursorRingRef = useRef(null);
   const [showTop, setShowTop] = useState(false);
-  const [dark, setDark] = useState(false);
-  const [isTouchDevice, setIsTouchDevice] = useState(false);
+  const [dark, setDark] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.localStorage.getItem("darkMode") === "true";
+  });
+  const [isTouchDevice] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.matchMedia("(pointer: coarse)").matches;
+  });
   const [easterEgg, setEasterEgg] = useState(false);
   const [easterEgg2, setEasterEgg2] = useState(false);
   const [currentPoem, setCurrentPoem] = useState(null);
@@ -79,11 +142,6 @@ export default function Portfolio() {
       ? easterPoemsData
       : FALLBACK_EASTER_POEMS;
   }, []);
-  useEffect(() => { setIsTouchDevice(window.matchMedia("(pointer: coarse)").matches); }, []);
-  useEffect(() => {
-    const saved = localStorage.getItem("darkMode");
-    if (saved === "true") setDark(true);
-  }, []);
   useEffect(() => {
     document.documentElement.classList.toggle("dark", dark);
     localStorage.setItem("darkMode", String(dark));
@@ -101,8 +159,10 @@ export default function Portfolio() {
       if (typeCharIdx > 0) {
         timeout = setTimeout(() => { setTypeText(word.slice(0, typeCharIdx - 1)); setTypeCharIdx(c => c - 1); }, 45);
       } else {
-        setTypeDeleting(false);
-        setTypeWordIdx(i => (i + 1) % TYPEWRITER_WORDS.length);
+        timeout = setTimeout(() => {
+          setTypeDeleting(false);
+          setTypeWordIdx(i => (i + 1) % TYPEWRITER_WORDS.length);
+        }, 0);
       }
     }
     return () => clearTimeout(timeout);
@@ -369,6 +429,25 @@ export default function Portfolio() {
         .exp-org { font-size: 0.85rem; color: var(--accent2); font-weight: 700; margin-bottom: 1rem; }
         .exp-desc { font-size: 0.84rem; color: var(--ink-light); line-height: 1.8; }
         .exp-year { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--accent); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 0.4rem; }
+        .project-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
+        .project-card { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 2rem; box-shadow: var(--shadow); text-decoration: none; display: flex; flex-direction: column; gap: 1rem; color: inherit; position: relative; overflow: hidden; transition: all 0.25s; }
+        .project-card::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(124,131,200,0.06), rgba(176,123,158,0.06)); opacity: 0; transition: opacity 0.25s; pointer-events: none; }
+        .project-card:hover::before { opacity: 1; }
+        .project-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--accent); }
+        .project-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; position: relative; z-index: 1; }
+        .project-type { font-family: 'JetBrains Mono', monospace; font-size: 0.64rem; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--accent); margin-bottom: 0.35rem; }
+        .project-year { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--ink-light); letter-spacing: 1.5px; text-transform: uppercase; }
+        .project-arrow { font-size: 1rem; color: var(--accent); line-height: 1; }
+        .project-name { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 700; color: var(--ink); position: relative; z-index: 1; }
+        .project-summary { font-size: 0.88rem; color: var(--ink-light); line-height: 1.8; position: relative; z-index: 1; }
+        .project-stack { display: flex; gap: 0.6rem; flex-wrap: wrap; position: relative; z-index: 1; }
+        .project-chip { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); background: var(--accent-soft); border: 1px solid rgba(124,131,200,0.18); border-radius: 999px; padding: 0.4rem 0.75rem; }
+        .project-highlights { list-style: none; display: flex; flex-direction: column; gap: 0.65rem; position: relative; z-index: 1; }
+        .project-highlights li { display: flex; gap: 0.6rem; font-size: 0.82rem; color: var(--ink-light); line-height: 1.7; }
+        .project-highlights li::before { content: '•'; color: var(--accent); flex-shrink: 0; }
+        .project-link { margin-top: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--accent); font-weight: 700; letter-spacing: 1px; position: relative; z-index: 1; }
+        .project-link::after { content: '↗'; margin-left: 0.45rem; }
+        .project-card:hover .project-link { color: var(--accent2); }
         .skills-groups { display: flex; flex-direction: column; gap: 0; }
         .skill-group { display: grid; grid-template-columns: 140px 1fr; gap: 0 2.5rem; align-items: start; padding: 2rem 0; border-bottom: 1px solid var(--border); }
         .skill-group:first-child { border-top: 1px solid var(--border); }
@@ -380,10 +459,14 @@ export default function Portfolio() {
         .skill-pill:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow-lg); background: var(--accent-soft); }
         .skill-group-languages .skill-pill { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; }
         .skill-group-languages { border-left: 2px solid var(--accent); padding-left: 1rem; }
+        .skill-group-web .skill-pill { font-family: 'Cabinet Grotesk', sans-serif; font-size: 0.82rem; font-weight: 700; }
+        .skill-group-web { border-left: 2px solid var(--accent2); padding-left: 1rem; }
+        .skill-group-backend .skill-pill { font-family: 'Playfair Display', serif; font-size: 0.88rem; font-weight: 700; }
+        .skill-group-backend { border-left: 2px solid var(--sage); padding-left: 1rem; }
         .skill-group-design .skill-pill { font-family: 'Dancing Script', cursive; font-size: 1.15rem; font-weight: 700; }
         .skill-group-design { border-left: 2px solid var(--accent2); padding-left: 1rem; }
-        .skill-group-management .skill-pill { font-family: 'Playfair Display', serif; font-size: 0.88rem; font-weight: 700; }
-        .skill-group-management { border-left: 2px solid var(--sage); padding-left: 1rem; }
+        .skill-group-tools .skill-pill { font-family: 'JetBrains Mono', monospace; font-size: 0.76rem; }
+        .skill-group-tools { border-left: 2px solid var(--accent); padding-left: 1rem; }
         .cert-grid { display: flex; gap: 1.5rem; flex-wrap: wrap; }
         .cert-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 2.2rem; box-shadow: var(--shadow); flex: 1; min-width: 240px; transition: all 0.25s; text-align: center; position: relative; overflow: hidden; text-decoration: none; display: block; }
         .cert-card::after { content: ''; position: absolute; inset: 0; background: var(--accent-soft); opacity: 0; transition: opacity 0.25s; }
@@ -437,6 +520,8 @@ export default function Portfolio() {
         .reveal-delay-1 { transition-delay: 0.1s; }
         .reveal-delay-2 { transition-delay: 0.2s; }
         .reveal-delay-3 { transition-delay: 0.3s; }
+        .reveal-delay-4 { transition-delay: 0.4s; }
+        .reveal-delay-5 { transition-delay: 0.5s; }
         body.custom-cursor * { cursor: none !important; }
         .cursor-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); position: fixed; transform: translate(-50%,-50%); transition: width 0.15s, height 0.15s, background 0.15s; z-index: 9999; pointer-events: none; will-change: left, top; }
         .cursor-dot.hover { width: 10px; height: 10px; background: var(--accent2); }
@@ -695,9 +780,9 @@ export default function Portfolio() {
             </svg>
           </div>
         </div>
-        <div className="hero-intro-greeting">-- hi, I'm Kevalya</div>
+        <div className="hero-intro-greeting">-- hi, I&apos;m Kevalya</div>
         <div className="hero-intro-line">
-          I would've preferred to introduce myself<br />in person, but <strong>here we are.</strong>
+          I&apos;d have preferred to introduce myself<br />in person, but <strong>here we are.</strong>
         </div>
         <div className="hero-aside">
           <span>{'// veni, vidi, segfault.'}</span>&nbsp; then fixed it.
@@ -705,7 +790,7 @@ export default function Portfolio() {
         <div className="hero-name-small">Kevalya Khandelwal - CSE @ UPES Dehradun</div>
         <div className="hero-actions">
           <button className="btn-primary" onClick={() => scrollTo("Contact")}>Get in Touch {"\u2192"}</button>
-          <button className="btn-outline" onClick={() => scrollTo("Experience")}>View Experience</button>
+          <button className="btn-outline" onClick={() => scrollTo("Projects")}>View Projects</button>
         </div>
         <div className="social-row">
           <a href={data.linkedin} target="_blank" rel="noreferrer" className="social-link">
@@ -765,13 +850,47 @@ export default function Portfolio() {
 
       <div className="section-divider"><div className="divider-symbol">&#10022;</div></div>
 
+      {/* ── Projects ── */}
+      <section data-section="Projects" ref={(el) => (sectionRefs.current["Projects"] = el)}>
+        <div className="section-overline reveal">Selected Work</div>
+        <div className="section-title reveal reveal-delay-1">My <em>Projects</em></div>
+        <div className="project-grid">
+          {data.projects.map((project, i) => (
+            <a href={project.link} target="_blank" rel="noreferrer" className={`project-card reveal reveal-delay-${i + 1}`} key={project.name}>
+              <div className="project-top">
+                <div>
+                  <div className="project-type">{project.type}</div>
+                  <div className="project-year">{project.year}</div>
+                </div>
+                <div className="project-arrow">↗</div>
+              </div>
+              <div className="project-name">{project.name}</div>
+              <div className="project-summary">{project.summary}</div>
+              <div className="project-stack">
+                {project.stack.map((item) => (
+                  <span className="project-chip" key={item}>{item}</span>
+                ))}
+              </div>
+              <ul className="project-highlights">
+                {project.highlights.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+              <div className="project-link">Open project</div>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <div className="section-divider"><div className="divider-symbol">&#10022;</div></div>
+
       {/* ── Skills ── */}
       <section data-section="Skills" ref={(el) => (sectionRefs.current["Skills"] = el)}>
-        <div className="section-overline reveal">{'// toolkit'}</div>
+        <div className="section-overline reveal">[ toolkit ]</div>
         <div className="section-title reveal reveal-delay-1">My <em>Skills</em></div>
         <div className="skills-groups reveal reveal-delay-2">
           {data.skillGroups.map((group, gi) => {
-            const groupClass = group.label === "Languages" ? "skill-group-languages" : group.label === "Design" ? "skill-group-design" : "skill-group-management";
+            const groupClass = SKILL_GROUP_CLASSES[group.tone] || "skill-group-languages";
             return (
               <div className={`skill-group ${groupClass}`} key={gi}>
                 <div className="skill-group-label">{group.label}</div>
@@ -785,7 +904,34 @@ export default function Portfolio() {
           })}
         </div>
         <div className="wip-comment-centered reveal reveal-delay-3">
-          <span className="wip-comment"><span className="wip-punct">{'/*'}</span> {"\uD83D\uDEA7"} more skills loading... <span className="wip-punct">{'*/'}</span></span>
+          <span className="wip-comment"><span className="wip-punct">[</span> {"\uD83D\uDEA7"} more skills loading... <span className="wip-punct">]</span></span>
+        </div>
+      </section>
+
+      <div className="section-divider"><div className="divider-symbol">&#10022;</div></div>
+
+      {/* ── Models ── */}
+      <section data-section="Models" ref={(el) => (sectionRefs.current["Models"] = el)} className="section-centered">
+        <div className="section-overline" style={{ justifyContent: "center" }}>Hugging Face</div>
+        <div className="section-title">Fine-Tuned <em>Models</em></div>
+        <div className="project-grid" style={{ maxWidth: "1020px" }}>
+          {data.modelHighlights.map((model, i) => (
+            <a href={model.link} target="_blank" rel="noreferrer" className={`project-card reveal reveal-delay-${i + 1}`} key={model.name}>
+              <div className="project-top">
+                <div>
+                  <div className="project-type">{model.role}</div>
+                  <div className="project-year">Hugging Face</div>
+                </div>
+                <div className="project-arrow">↗</div>
+              </div>
+              <div className="project-name">{model.name}</div>
+              <div className="project-summary">{model.note}</div>
+              <div className="project-link">Open on Hugging Face</div>
+            </a>
+          ))}
+        </div>
+        <div className="wip-comment-centered reveal reveal-delay-4">
+          <span className="wip-comment"><span className="wip-punct">[</span> 3 fine-tuned models published on Hugging Face <span className="wip-punct">]</span></span>
         </div>
       </section>
 
@@ -805,7 +951,7 @@ export default function Portfolio() {
             </a>
           ))}
           <div className={`cert-card cert-card-wip reveal reveal-delay-${data.certificates.length + 1}`}>
-            <div className="wip-tooltip">// still earning these</div>
+            <div className="wip-tooltip">status: still earning these</div>
             <div className="cert-icon">{"\uD83D\uDEA7"}</div>
             <div className="cert-name">More Coming</div>
             <div className="cert-issuer">Work in Progress</div>
@@ -832,7 +978,7 @@ export default function Portfolio() {
           })}
         </div>
         <div className="wip-comment-centered reveal reveal-delay-3">
-          <span className="wip-comment"><span className="wip-punct">{'/*'}</span> {"\uD83D\uDEA7"} still exploring... <span className="wip-punct">{'*/'}</span></span>
+          <span className="wip-comment"><span className="wip-punct">[</span> {"\uD83D\uDEA7"} still exploring... <span className="wip-punct">]</span></span>
         </div>
       </section>
 
@@ -884,7 +1030,7 @@ export default function Portfolio() {
       {/* ── Currently ── */}
       <section data-section="Currently" className="section-centered currently-section">
         <div className="section-overline" style={{ justifyContent: "center" }}>right now</div>
-        <div className="section-title">What I'm <em>Up To</em></div>
+        <div className="section-title">What I&apos;m <em>Up To</em></div>
         <div className="currently-grid">
           <div className="currently-card reveal reveal-delay-1">
             <span className="currently-card-icon">{"\uD83D\uDCD6"}</span>
@@ -922,7 +1068,7 @@ export default function Portfolio() {
         <div className="footer-quote">
           <blockquote onClick={handleFooterTap}>One must still have chaos in oneself to give birth to a dancing star.</blockquote>
           <cite>{"\u2014"} Friedrich Nietzsche</cite>
-          <div className="footer-easter-hint">// there's more here<span className="footer-hint-cursor" /></div>
+          <div className="footer-easter-hint">there&apos;s more here<span className="footer-hint-cursor" /></div>
         </div>
         <div className="footer-bottom">
           <div className="footer-inner">
