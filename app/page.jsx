@@ -592,7 +592,8 @@ export default function Portfolio() {
         .intro-quote.lit { color: rgba(210,205,240,0.8); }
         .intro-quote-typewriter { display: inline-flex; align-items: center; min-height: 2.2em; }
         .intro-quote-caret { display: inline-block; width: 1.5px; height: 1.05em; margin-left: 5px; background: currentColor; animation: blink 1s step-end infinite; opacity: 0.85; }
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
+          body { overflow-x: hidden; }
           .nav-links { display: none; }
           .nav-logo-status { display: none; }
           .hamburger { display: flex; }
@@ -605,10 +606,15 @@ export default function Portfolio() {
           .footer-quote { padding: 3rem 1.5rem 2rem; }
           .footer-bottom { padding: 1.5rem; }
           .easter-box { padding: 2rem 1.5rem; }
-          .intro-stage { display: flex; flex-direction: column; justify-content: flex-start; align-items: center; gap: 0.8rem; padding-top: 0.7rem; padding-right: 0; }
-          .intro-lamp-side { position: static; top: auto; right: auto; transform: scale(0.85) translate(-8px, -14px); }
-          .intro-vinyl-side { position: static; top: auto; right: auto; transform: none; margin-top: 18px; }
-          .intro-vinyl-wrap { width: 200px; height: 200px; }
+          .intro-screen { overflow: hidden; width: 100vw; }
+          .intro-stage { display: flex !important; flex-direction: column; justify-content: center; align-items: center; gap: 0.8rem; padding-top: 0.7rem; padding-right: 0; padding-left: 0; width: 100%; height: 100%; overflow: hidden; margin: 0; }
+          .intro-lamp-side { position: static !important; top: auto; right: auto; left: auto; transform: scale(0.55); margin: 0; width: auto; flex-shrink: 0; }
+          .intro-lamp-svg-wrap { width: 200px !important; height: auto; }
+          .intro-vinyl-side { position: static !important; top: auto; right: auto; left: auto; transform: none !important; margin: 1.5rem 0 0 0; padding: 0; width: auto; flex-shrink: 0; gap: 0; }
+          .intro-vinyl-outer { width: auto; display: flex; justify-content: center; margin: 0; }
+          .intro-vinyl-wrap { width: 140px !important; height: 140px !important; }
+          .intro-tonearm-wrap { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) scale(0.6) !important; }
+          .intro-quote { max-width: 80vw; padding: 0 1rem; font-size: clamp(0.65rem, 1.2vw, 0.85rem); margin-top: 1.5rem; }
         }
       `}</style>
 
